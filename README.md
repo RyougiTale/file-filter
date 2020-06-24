@@ -98,6 +98,8 @@ electron-react-typescript-base-proj/
 | - tslint.json         //- TSLint config
 | - webpack.config.js   //- Webpack config
 ```
+## Author
+[Story](https://github.com/TongHuaStory/file-filter)
 
 ## Boilerplate Author
 [Wing Chau](https://github.com/iamWing)

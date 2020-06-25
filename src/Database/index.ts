@@ -1,7 +1,9 @@
-const Datastore = require('../../node_modules/nedb')
-const path = require('../../node_modules/path')
-import { remote } from 'electron'
+const Datastore = require('../../node_modules/nedb');
+const path = require('../../node_modules/path');
+import { remote, ipcRenderer } from 'electron';
 const smalltalk = require('smalltalk');
+const fse = require('fs-extra')
+const move = require('../Common/move')
 
 // let db: any = remote.getGlobal('MyDatabase');
 // let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
@@ -12,6 +14,7 @@ class Database {
     db: any;
     depositoryNum: number;
     defaultDepository: any;
+    defaultPath: any;
 
     constructor() {
         this.db = remote.getGlobal('MyDatabase');
@@ -25,6 +28,34 @@ class Database {
                 this.defaultDepository = docs[0];
             }
         });
+        ipcRenderer.on('selected-directory', (event: any, path: any) => {
+            this.defaultPath = path;
+            smalltalk
+                .prompt('Depository', 'You are Creating a Depository, Please enter depository name', "")
+                .then((depositoryName: String) => {
+                    let dep = {
+                        "data-type": "depository",
+                        "depository-type": 'normal',
+                        "depository-index": this.depositoryNum,
+                        "depository-date": new Date(),
+                        "depository-name": depositoryName,
+                        "depository-path": this.defaultPath
+                    };
+                    this.db.insert(dep, (err: any, newDoc: any) => {
+                        console.log(err);
+                    });
+                    if (this.depositoryNum === 0) {
+                        this.SetDefaultDepository(depositoryName);
+                    }
+                })
+                .catch(() => {
+                    smalltalk
+                        .alert('Error', 'fail to create depository!')
+                        .then(() => {
+                            console.log('ok');
+                        });
+                });
+        })
         // this.db = remote.getGlobal('MyDatabase');
     }
 
@@ -56,30 +87,7 @@ class Database {
     }
 
     createDepository(): any {
-        smalltalk
-            .prompt('Depository', 'You are Creating a Depository, Please enter depository name', "")
-            .then((depositoryName: String) => {
-                let dep = {
-                    "data-type": "depository",
-                    "depository-type": 'normal',
-                    "depository-index": this.depositoryNum,
-                    "depository-date": new Date(),
-                    "depository-name": depositoryName
-                };
-                this.db.insert(dep, (err: any, newDoc: any) => {
-                    console.log(err);
-                });
-                if (this.depositoryNum === 0) {
-                    this.SetDefaultDepository(depositoryName);
-                }
-            })
-            .catch(() => {
-                smalltalk
-                    .alert('Error', 'fail to create depository!')
-                    .then(() => {
-                        console.log('ok');
-                    });
-            });
+        ipcRenderer.send('open-file-dialog');
     }
 
     SetDefaultDepository(name: String): any {
@@ -103,6 +111,15 @@ class Database {
     }
     insert(something: any) {
         this.db.insert(something);
+        this.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
+            console.log(something);
+            console.log(docs[0]["depository-path"])
+            let old = something["file-path"].split("\\");
+            fse.move(something["file-path"], docs[0]["depository-path"] + `/${old[old.length - 1]}`, (err: any) => {
+                console.log(err);
+            })
+
+        });
     }
 }
 

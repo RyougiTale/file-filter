@@ -1,11 +1,11 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-const Datastore  = require('../../node_modules/nedb')
-const globalAny:any = global;
+const Datastore = require('../../node_modules/nedb')
+const globalAny: any = global;
 
 
 let db: any;
@@ -44,6 +44,17 @@ function createWindow(): void {
         event.sender.startDrag({
             file: filePath,
             icon: '/path/to/icon.png'
+        })
+    })
+
+    ipcMain.on('open-file-dialog', (event: any) => {
+        console.log('here')
+        dialog.showOpenDialog({
+            properties: ['openFile', 'openDirectory']
+        }, (files) => {
+            if (files) {
+                event.sender.send('selected-directory', files)
+            }
         })
     })
 

@@ -59,6 +59,8 @@ class App extends React.Component<Props, State> {
   componentDidMount() {
     // this.listenDrag();
 
+    
+
     console.log(__dirname);
 
     document.ondragover = document.ondrop = (ev) => {
@@ -95,7 +97,7 @@ class App extends React.Component<Props, State> {
                   "owner-name": defaultDepository["depository-name"],
                   "file-path": name,
                   "description": des,
-                  "tags": tag.split(" ").filter(n=>n),
+                  "tags": tag.split(" ").filter(n => n),
                 };
                 db.insert(file);
 
@@ -139,7 +141,7 @@ class App extends React.Component<Props, State> {
   render() {
     return (
       <div id="drag">
-        <Button variant="contained" color="primary" onClick={() => { this.setState({ bar: 2.0 }); alert('clicked') }}>
+        <Button variant="contained" color="primary" id='select-directory'>
           HELLO, WORLD
       </Button>
       </div>

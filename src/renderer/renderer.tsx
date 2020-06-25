@@ -9,43 +9,30 @@ import { key_word } from '../Common/db'
 // import Datastore from '../../node_modules/nedb'
 import { Database } from '../Database';
 const smalltalk = require('smalltalk');
-
+const { Menu } = require('electron').remote
+import {Filter} from '../Components/Filter'
+import {ListV} from '../Components/ListV'
 
 // import Nedb = require("../../node_modules/@types/nedb")
 // Import the styles here to process them with webpack
 import '@public/style.css';
 
 interface Props {
-  foo: string,
 };
 
 interface State {
   bar: any,
 }
 
-let db: any;
+let db: any = new Database();;
 
 class App extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    db = new Database();
-    console.log(db)
     this.state = { bar: 1.0 };
   }
 
-  // componentDidMount() {
-  //   this.timer = setInterval(function () {
-  //     var opacity = this.state.opacity;
-  //     opacity -= .05;
-  //     if (opacity < 0.1) {
-  //       opacity = 1.0;
-  //     }
-  //     this.setState({
-  //       opacity: opacity
-  //     });
-  //   }.bind(this), 100);
-  // }
   shouldComponentUpdate(nextProps: Props, nextState: State) {
     // console.log(this);
     // console.log(nextState);
@@ -56,10 +43,82 @@ class App extends React.Component<Props, State> {
     else return false;
   }
 
+  initMenu() {
+    let sub: any = [
+      {
+        label: 'create depository',
+        click() {
+          ipcRenderer.send('open-file-dialog');
+        }
+      },
+    ]
+    db.db.find({ "data-type": "depository" }, (err: any, docs: any) => {
+      console.log(docs);
+      if (docs.length !== 0) {
+        for (let ele of docs) {
+          sub.push({
+            label: ele["depository-name"],
+            click() {
+              this.
+                console.log(ele);
+            }
+          })
+        }
+      }
+      const template: Electron.MenuItemConstructorOptions[] = [{
+        label: 'Edit',
+        submenu: [
+          { role: 'undo' },
+          { role: 'redo' },
+          { type: 'separator' },
+          { role: 'cut' },
+          { role: 'copy' },
+          { role: 'paste' },
+          { role: 'pasteandmatchstyle' },
+          { role: 'delete' },
+          { role: 'selectall' }
+        ]
+      },
+      {
+        label: 'View',
+        submenu: [
+          { role: 'reload' },
+          { role: 'forcereload' },
+          { role: 'toggledevtools' },
+          { type: 'separator' },
+          { role: 'resetzoom' },
+          { role: 'zoomin' },
+          { role: 'zoomout' },
+          { type: 'separator' },
+          { role: 'togglefullscreen' }
+        ]
+      },
+      { role: 'window', submenu: [{ role: 'minimize' }, { role: 'close' }] },
+      {
+        role: 'help',
+        submenu: [{
+          label: 'Learn More',
+          click() {
+            require('electron').shell.openExternal('https://electron.atom.io');
+          }
+        }]
+      },
+      {
+        label: 'depository',
+        submenu: sub
+      },
+      ];
+
+      const menu = Menu.buildFromTemplate(template)
+      Menu.setApplicationMenu(menu)
+    })
+
+  }
+
   componentDidMount() {
     // this.listenDrag();
+    this.initMenu();
 
-    
 
     console.log(__dirname);
 
@@ -140,19 +199,53 @@ class App extends React.Component<Props, State> {
 
   render() {
     return (
-      <div id="drag">
-        <Button variant="contained" color="primary" id='select-directory'>
-          HELLO, WORLD
-      </Button>
+      <div style={{
+        width: '100%',
+        height: '100%'
+      }}>
+        <Filter ButtonNum={3} ButtonsArray={["c++", "javascript", "typescript"]} ></Filter>
       </div>
     );
   }
 };
 
 
-
+// db.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
+//   console.log(`[story] ${docs}`);
+//   console.log(docs)
+//   if (docs.length == 0) {
+//     db.createDepository();
+//   }
+//   else {
+//     let defaultDepository = docs[0];
+//     let des: String = "";
+//     smalltalk
+//       .prompt('Description', 'You should type description for this file', "")
+//       .then((description: String) => {
+//         des = description;
+//         let tags: String = "tags";
+//         smalltalk
+//           .prompt('Tags', 'You should type tags with space \" \"', "example: c++ thread developing")
+//           .then((tag: String) => {
+//             let file = {
+//               "owner-name": defaultDepository["depository-name"],
+//               "file-path": name,
+//               "description": des,
+//               "tags": tag.split(" ").filter(n => n),
+//             };
+//             db.insert(file);
+//           })
+//           .catch(() => {
+//             tags = "";
+//           });
+//       })
+//       .catch(() => {
+//         des = "no description";
+//       });
+//   }
+// });
 
 ReactDOM.render(
-  <App foo="hello" />,
+  <App />,
   document.getElementById('app')
 );

@@ -1,16 +1,19 @@
 /**
  * Entry point of the Election app.
  */
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, Menu, shell, ipcRenderer } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 const Datastore = require('../../node_modules/nedb')
 const globalAny: any = global;
-
-
 let db: any;
 
 let mainWindow: Electron.BrowserWindow | null;
+
+const isMac = process.platform === 'darwin'
+
+
+
 
 function createWindow(): void {
     // Create the browser window.

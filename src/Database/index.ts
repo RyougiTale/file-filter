@@ -114,7 +114,11 @@ class Database {
         this.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
             console.log(something);
             console.log(docs[0]["depository-path"])
-            let old = something["file-path"].split("\\");
+            let old: any;
+            if (something["file-path"].indexOf(":") !== -1)
+                old = something["file-path"].split("/");
+            else
+                old = something["file-path"].split("\\");
             fse.move(something["file-path"], docs[0]["depository-path"] + `/${old[old.length - 1]}`, (err: any) => {
                 console.log(err);
             })

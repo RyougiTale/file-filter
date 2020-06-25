@@ -42,16 +42,13 @@ possible by changing the build scripts in `package.json` as below:
 ```json
 // from
 "scripts": {
-    ...
     "build:win": "electron-builder build --win --x64",
     "build:mac": "electron-builder build --mac --x64"
 },
 
 // to
 "scripts": {
-    ...
     "build:win": "electron-builder build --win --ia32",
-    // Works only on macOS version < 10.15
     "build:mac": "electron-builder build --mac --ia32"
 },
 ```

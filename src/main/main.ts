@@ -8,6 +8,7 @@ const Datastore  = require('../../node_modules/nedb')
 const globalAny:any = global;
 
 
+let db: any;
 
 let mainWindow: Electron.BrowserWindow | null;
 
@@ -22,8 +23,6 @@ function createWindow(): void {
 
         }
     });
-    let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
-    globalAny.MyDatabase = MyDatabase;
 
     mainWindow.webContents.openDevTools({ mode: "detach" });
     // and load the index.html of the app.
@@ -34,7 +33,9 @@ function createWindow(): void {
             slashes: true
         })
     );
-    
+    let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
+    globalAny.MyDatabase = MyDatabase;
+
     ipcMain.on('ondragstart', (event: any, filePath: any) => {
         console.log(event);
         console.log(filePath);

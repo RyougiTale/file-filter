@@ -51,7 +51,6 @@ function createWindow(): void {
     })
 
     ipcMain.on('open-file-dialog', (event: any) => {
-        console.log('here')
         dialog.showOpenDialog({
             properties: ['openFile', 'openDirectory']
         }, (files) => {

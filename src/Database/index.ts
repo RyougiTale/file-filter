@@ -12,6 +12,7 @@ const move = require('../Common/move')
 
 class Database {
     db: any;
+    haveListen: boolean;
     depositoryNum: number;
     defaultDepository: any;
     defaultPath: any;
@@ -20,6 +21,7 @@ class Database {
         this.db = remote.getGlobal('MyDatabase');
         console.log(this.db);
         this.depositoryNum = 0;
+        this.haveListen = false;
         this.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
             if (docs.length == 0) {
                 this.defaultDepository = null;
@@ -28,34 +30,7 @@ class Database {
                 this.defaultDepository = docs[0];
             }
         });
-        ipcRenderer.on('selected-directory', (event: any, path: any) => {
-            this.defaultPath = path;
-            smalltalk
-                .prompt('Depository', 'You are Creating a Depository, Please enter depository name', "")
-                .then((depositoryName: String) => {
-                    let dep = {
-                        "data-type": "depository",
-                        "depository-type": 'normal',
-                        "depository-index": this.depositoryNum,
-                        "depository-date": new Date(),
-                        "depository-name": depositoryName,
-                        "depository-path": this.defaultPath
-                    };
-                    this.db.insert(dep, (err: any, newDoc: any) => {
-                        console.log(err);
-                    });
-                    if (this.depositoryNum === 0) {
-                        this.SetDefaultDepository(depositoryName);
-                    }
-                })
-                .catch(() => {
-                    smalltalk
-                        .alert('Error', 'fail to create depository!')
-                        .then(() => {
-                            console.log('ok');
-                        });
-                });
-        })
+
         // this.db = remote.getGlobal('MyDatabase');
     }
 
@@ -63,6 +38,7 @@ class Database {
         this.db.find({ "data-type": "depository" }, (err: any, docs: any) => {
             this.depositoryNum = docs.length;
             console.log(`[story] ${docs}`);
+            console.log(docs);
             if (docs.length == 0) {
                 return null;
             }
@@ -87,7 +63,42 @@ class Database {
     }
 
     createDepository(): any {
-        ipcRenderer.send('open-file-dialog');
+        return new Promise(resolve => {
+            ipcRenderer.send('open-file-dialog');
+            if (!this.haveListen) {
+                this.haveListen = !this.haveListen;
+
+                ipcRenderer.on('selected-directory', (event: any, path: any) => {
+                    this.defaultPath = path;
+                    smalltalk
+                        .prompt('Depository', 'You are Creating a Depository, Please enter depository name', "")
+                        .then((depositoryName: String) => {
+                            let dep = {
+                                "data-type": "depository",
+                                "depository-type": 'normal',
+                                "depository-index": this.depositoryNum,
+                                "depository-date": new Date(),
+                                "depository-name": depositoryName,
+                                "depository-path": this.defaultPath
+                            };
+                            this.db.insert(dep, (err: any, newDoc: any) => {
+                                console.log(err);
+                            });
+                            if (this.depositoryNum === 0) {
+                                this.SetDefaultDepository(depositoryName);
+                            }
+                            resolve();
+                        })
+                        .catch(() => {
+                            smalltalk
+                                .alert('Error', 'fail to create depository!')
+                                .then(() => {
+                                    console.log('ok');
+                                });
+                        });
+                })
+            }
+        });
     }
 
     SetDefaultDepository(name: String): any {

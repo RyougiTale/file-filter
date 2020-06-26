@@ -36,11 +36,11 @@ export default class App extends React.Component<Props, State> {
         this.state = { mainDepositoryName: "", buttonNum: 0, buttonsArray: [], depositoryArray: [], needInit: false };
         this.setMainDepositoryName = this.setMainDepositoryName.bind(this)
     }
-  
+
     setMainDepositoryName(value: string) {
-      this.setState({
-        mainDepositoryName: value,
-      })
+        this.setState({
+            mainDepositoryName: value,
+        })
     }
 
     shouldComponentUpdate(nextProps: Props, nextState: State) {
@@ -260,8 +260,59 @@ export default class App extends React.Component<Props, State> {
                     height: '100%'
                 }}>
                     Hello world
-                    <Filter ButtonNum={this.state.buttonNum}
-                        ButtonsArray={this.state.buttonsArray}>
+                    <Filter
+                        //ButtonNum={this.state.buttonNum}
+                        //ButtonsArray={this.state.buttonsArray}
+                        ButtonNum={40}
+                        ButtonsArray={["C",
+                            "Java",
+                            "Python",
+                            "C++",
+                            "C#",
+                            "Visual Basic",
+                            "JavaScript",
+                            "PHP",
+                            "R",
+                            "SQL",
+                            "Swift",
+                            "Go",
+                            "Ruby",
+                            "Assembly language",
+                            "MATLAB",
+                            "Perl",
+                            "PL/SQL",
+                            "Scratch",
+                            "Classic Visual Basic",
+                            "Rust",
+                            "Objective-C",
+                            "Delphi/Object Pascal",
+                            "D",
+                            "Lisp",
+                            "Dart",
+                            "SAS",
+                            "Transact-SQL",
+                            "Logo",
+                            "COBOL",
+                            "Kotlin",
+                            "Groovy",
+                            "Scala",
+                            "Julia",
+                            "ABAP",
+                            "PowerShell",
+                            "OpenEdge ABL",
+                            "Fortran",
+                            "Lua",
+                            "VBScript",
+                            "Ada",
+                            "FoxPro",
+                            "ML",
+                            "LabVIEW",
+                            "TypeScript",
+                            "Haskell",
+                            "Scheme",
+                            "Prolog",
+                            "ActionScript",
+                            "Bash",]}  >
                     </Filter>
                 </div >
             );

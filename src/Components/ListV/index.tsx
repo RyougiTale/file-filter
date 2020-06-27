@@ -18,7 +18,7 @@ export class ListV extends React.Component<Props, State> {
     render() {
         let Card = [];
         for (let obj of this.props.fileArray) {
-            Card.push(<div>{obj["file-path"]} {obj["description"]} {obj["tags"]}</div>)
+            Card.push(<div key={obj["file-path"]}>{obj["file-path"]} {obj["description"]} {obj["tags"]}</div>)
         }
         return (<div>{Card}</div>)
     }

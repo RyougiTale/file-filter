@@ -21,10 +21,16 @@ interface Props {
 
 interface State {
     mainDepositoryName: String,
+
     buttonNum: number,
     buttonsArray: String[],
+    selectedButtonArray: String[],
     depositoryArray: String[],
+    fileArray: String[],
+
     needInit: boolean,
+    needUpdateTags: boolean,
+    needUpdateFiles: boolean,
 }
 
 let db: any = new Database();
@@ -33,13 +39,19 @@ export default class App extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = { mainDepositoryName: "", buttonNum: 0, buttonsArray: [], depositoryArray: [], needInit: false };
+        this.state = { mainDepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: ["all-files"], depositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [] };
         this.setMainDepositoryName = this.setMainDepositoryName.bind(this)
     }
 
     setMainDepositoryName(value: string) {
         this.setState({
             mainDepositoryName: value,
+        })
+    }
+
+    setSelectedButtonArray(arr: String[]) {
+        this.setState({
+            selectedButtonArray: arr,
         })
     }
 
@@ -138,53 +150,44 @@ export default class App extends React.Component<Props, State> {
     }
 
     saveFile(name: any): void {
-        console.log(typeof (name) + " " + name);
-        db.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
-            console.log(`[story] ${docs}`);
-            console.log(docs)
-            if (docs.length == 0) {
-                db.createDepository();
-            }
-            else {
-                let defaultDepository = docs[0];
-                let des: String = "";
-                smalltalk
-                    .prompt('Description', 'You should type description for this file', "")
-                    .then((description: String) => {
-                        des = description;
-                        let tags: String = "tags";
 
-                        smalltalk
-                            .prompt('Tags', 'You should type tags with space \" \"', "example: c++ thread developing")
-                            .then((tag: String) => {
+        if (this.state.mainDepositoryName !== "") {
+            let defaultDepository: String = this.state.mainDepositoryName;
+            let des: String = "";
+            smalltalk
+                .prompt('Description', 'You should type description for this file', "")
+                .then((description: String) => {
+                    des = description;
+                    let tags: String = "tags";
 
-                                let file = {
-                                    "owner-name": defaultDepository["depository-name"],
-                                    "file-path": name,
-                                    "description": des,
-                                    "tags": tag.split(" ").filter(n => n),
-                                };
-                                db.insert(file);
+                    smalltalk
+                        .prompt('Tags', 'You should type tags with space \" \"', "example: c++ thread developing")
+                        .then((tag: String) => {
+                            let tagArray = tag.split(" ").filter(n => n);
+                            let file = {
+                                "owner-name": defaultDepository,
+                                "file-path": name,
+                                "description": des,
+                                "tags": tagArray,
+                            };
+                            // db.db.findOne({ "data-type": "tags" }, (err: any, docs: any) => {
+                            //     console.log(docs);
+                            // })
+                            // for (let ele of tagArray) {
+                            //     db.update({"data-type": "tags"}, )
+                            // }
 
-                            })
-                            .catch(() => {
-                                tags = "";
-                            });
-                    })
-                    .catch(() => {
-                        des = "no description";
-                    });
-            }
-        });
-
-
-
-
-
-
-
-
-
+                            db.insert(file);
+                            this.setState({ needUpdateFiles: true, needUpdateTags: true })
+                        })
+                        .catch(() => {
+                            tags = "";
+                        });
+                })
+                .catch(() => {
+                    des = "no description";
+                });
+        }
 
     }
     //popup
@@ -203,20 +206,12 @@ export default class App extends React.Component<Props, State> {
         }
     }
 
-    listenInit(): void {
-        console.log("hello")
-        ipcRenderer.on('init success', (event: any, path: any) => {
-            console.log("hello")
-            this.setState({ needInit: false });
-        });
-    }
 
     render() {
         if (this.state.needInit === true) {
             return (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Button onClick={() => {
-                        // this.listenInit();
                         db.createDepository().then(() => {
                             this.setState({ needInit: false })
                         });
@@ -251,71 +246,109 @@ export default class App extends React.Component<Props, State> {
             }
 
         }
-        //ButtonsArray={["c++", "javascript", "typescript"]}
-        else {
 
+        if (this.state.needUpdateTags === true) {
+            db.db.find({ "owner-name": this.state.mainDepositoryName }, (err: any, docs: any) => {
+                console.log(docs.map((obj: any) => { return obj["tags"] }))
+                // this.setState({buttonsArray, needUpdateTags: false})
+                let tagsArray: any[] = [];
+                for (let array of docs.map((obj: any) => { return obj["tags"] })) {
+                    for (let tag of array) {
+                        if (tagsArray[tag]) tagsArray[tag]++;
+                        else tagsArray[tag] = 1;
+                    }
+                }
+                let keysSorted = Object.keys(tagsArray).sort(function (a: any, b: any) { return tagsArray[b] - tagsArray[a] })
+                console.log(keysSorted);
+                this.setState({ buttonsArray: keysSorted, needUpdateTags: false })
+            })
             return (
-                <div style={{
-                    width: '100%',
-                    height: '100%'
-                }}>
-                    Hello world
-                    <Filter
-                        //ButtonNum={this.state.buttonNum}
-                        //ButtonsArray={this.state.buttonsArray}
-                        ButtonNum={40}
-                        ButtonsArray={["C",
-                            "Java",
-                            "Python",
-                            "C++",
-                            "C#",
-                            "Visual Basic",
-                            "JavaScript",
-                            "PHP",
-                            "R",
-                            "SQL",
-                            "Swift",
-                            "Go",
-                            "Ruby",
-                            "Assembly language",
-                            "MATLAB",
-                            "Perl",
-                            "PL/SQL",
-                            "Scratch",
-                            "Classic Visual Basic",
-                            "Rust",
-                            "Objective-C",
-                            "Delphi/Object Pascal",
-                            "D",
-                            "Lisp",
-                            "Dart",
-                            "SAS",
-                            "Transact-SQL",
-                            "Logo",
-                            "COBOL",
-                            "Kotlin",
-                            "Groovy",
-                            "Scala",
-                            "Julia",
-                            "ABAP",
-                            "PowerShell",
-                            "OpenEdge ABL",
-                            "Fortran",
-                            "Lua",
-                            "VBScript",
-                            "Ada",
-                            "FoxPro",
-                            "ML",
-                            "LabVIEW",
-                            "TypeScript",
-                            "Haskell",
-                            "Scheme",
-                            "Prolog",
-                            "ActionScript",
-                            "Bash",]}  >
-                    </Filter>
-                </div >
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress />
+                </div>
             );
         }
+
+        if (this.state.needUpdateFiles === true) {
+            db.db.find({ "owner-name": this.state.mainDepositoryName }, (err: any, docs: any) => {
+                let array: any[] = [];
+                for (let tag in this.state.selectedButtonArray) {
+                    // filter
+                }
+                console.log(docs.map((obj: any) => { return obj["tags"] }))
+                this.setState({ needUpdateFiles: false, fileArray: array })
+                // this.setState({buttonsArray, needUpdateTags: false})
+            })
+            return (
+                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress />
+                </div>
+            );
+        }
+
+        return (
+            <div style={{
+                width: '100%',
+                height: '100%'
+            }}>
+                Hello world
+                <Filter
+                    //ButtonNum={this.state.buttonNum}
+                    //ButtonsArray={this.state.buttonsArray}
+                    ButtonNum={40}
+                    ButtonsArray={["C",
+                        "Java",
+                        "Python",
+                        "C++",
+                        "C#",
+                        "Visual Basic",
+                        "JavaScript",
+                        "PHP",
+                        "R",
+                        "SQL",
+                        "Swift",
+                        "Go",
+                        "Ruby",
+                        "Assembly language",
+                        "MATLAB",
+                        "Perl",
+                        "PL/SQL",
+                        "Scratch",
+                        "Classic Visual Basic",
+                        "Rust",
+                        "Objective-C",
+                        "Delphi/Object Pascal",
+                        "D",
+                        "Lisp",
+                        "Dart",
+                        "SAS",
+                        "Transact-SQL",
+                        "Logo",
+                        "COBOL",
+                        "Kotlin",
+                        "Groovy",
+                        "Scala",
+                        "Julia",
+                        "ABAP",
+                        "PowerShell",
+                        "OpenEdge ABL",
+                        "Fortran",
+                        "Lua",
+                        "VBScript",
+                        "Ada",
+                        "FoxPro",
+                        "ML",
+                        "LabVIEW",
+                        "TypeScript",
+                        "Haskell",
+                        "Scheme",
+                        "Prolog",
+                        "ActionScript",
+                        "Bash",]} />
+                <ListV fileArray={this.state.fileArray} />
+
+            </div >
+        );
+
     }
 };

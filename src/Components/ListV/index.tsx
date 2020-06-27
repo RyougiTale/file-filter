@@ -1,6 +1,8 @@
 import * as React from 'react';
+import {Paper} from '@material-ui/core'
 
 interface Props {
+    fileArray: String[],
 };
 
 interface State {

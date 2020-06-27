@@ -18,8 +18,7 @@ npm start
 ```
 
 ## Building the installer for your Electron app
-The boilerplate is currently configured to package & build the installer of 
-your app for macOS & Windows using `electron-builder`. 
+for macOS & Windows using `electron-builder`. 
 
 For macOS, execute:
 ```sh
@@ -30,10 +29,6 @@ For Windows, execute:
 ```sh
 npm run build:win
 ```
-_** `asar` archiving is disabled by default in Windows build as it can cause 
-errors while running the installed Electron app based on pervious experiences, 
-whereas the macOS build with `asar` enabled works just fine. You can turn it 
-back on by removing line 23 (`"asar": false`) in `package.json`. **_
 
 ### Extra options
 The build scripts are pre-configured to build 64 bit installers since 64 bit 
@@ -52,17 +47,6 @@ possible by changing the build scripts in `package.json` as below:
     "build:mac": "electron-builder build --mac --ia32"
 },
 ```
-
-Builds for Linux, armv71, and arm64 can also be configured by modifying the 
-build scripts in `package.json`, but those aren't tested yet. For details, 
-please refer to [documents of `electron-builder`](https://www.electron.build/cli).
-
-
-## Author
-[Story](https://github.com/TongHuaStory/file-filter)
-
-## Boilerplate Author
-[Wing Chau](https://github.com/iamWing)
 
 ## License
 [licensed as MIT](LICENSE).

@@ -26,7 +26,7 @@ interface State {
     buttonsArray: String[],
     selectedButtonArray: String[],
     depositoryArray: String[],
-    fileArray: String[],
+    fileArray: any[],
 
     needInit: boolean,
     needUpdateTags: boolean,
@@ -291,7 +291,6 @@ export default class App extends React.Component<Props, State> {
                 width: '100%',
                 height: '100%'
             }}>
-                Hello world
                 <Filter
                     //ButtonNum={this.state.buttonNum}
                     //ButtonsArray={this.state.buttonsArray}
@@ -345,7 +344,17 @@ export default class App extends React.Component<Props, State> {
                         "Prolog",
                         "ActionScript",
                         "Bash",]} />
-                <ListV fileArray={this.state.fileArray} />
+                <ListV
+                    //fileArray={this.state.fileArray}
+                    fileArray={[{
+                        "file-path": "/root/",
+                        "description": "a file a file",
+                        "tags": ["c++", "rust"],
+                    }, {
+                        "file-path": "/dev/",
+                        "description": "two file two file",
+                        "tags": ["javascript", "rust"],
+                    }]} />
 
             </div >
         );

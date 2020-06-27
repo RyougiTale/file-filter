@@ -20,11 +20,20 @@ export default class Choose extends React.Component<Props, State> {
     render() {
         let buttons = [];
         for (let ele of this.props.depositoryArray) {
-            buttons.push(<Button key={ele.toString()} onClick={() => {
-                this.props.callBack(ele);
-            }}>{ele}</Button>)
+            buttons.push(<Button
+                style={{
+
+                }}
+                key={ele.toString()}
+                color="primary"
+                onClick={() => {
+                    this.props.callBack(ele);
+                }}
+
+
+            >{ele}</Button>)
         }
-        return (<div>{buttons}</div>)
+        return (<div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{buttons}</div>)
     }
 
     componentDidMount() { }

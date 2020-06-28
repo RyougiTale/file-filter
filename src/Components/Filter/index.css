@@ -1,5 +1,6 @@
 .buttonList{
     display: flex;
+    justify-content: center;
     flex-wrap: wrap;
     transition: .35s ease;
     height: 100%;
@@ -15,6 +16,8 @@
     border-bottom: 2px rgba(0,0,0,0);
     background: rgba(255,255,255,.1);
     transition: .35s ease;
+    margin: 5px 10px;
+    cursor: pointer;
 
     /* 去除选中时的蓝色边框 */
     outline:none;

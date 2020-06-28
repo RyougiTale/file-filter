@@ -15,7 +15,7 @@ import '@public/style.css';
 import Choose from '@/Components/Choose';
 const SplitterLayout = require('react-splitter-layout/lib').default
 import 'react-splitter-layout/lib/index.css';
-import { dummyButtons } from '../Common/dummydata';
+import { dummyButtons, dummyFiles } from '../Common/dummydata';
 
 
 
@@ -152,7 +152,7 @@ export default class App extends React.Component<Props, State> {
         }
     }
 
-    saveFile(name: any): void {
+    saveFile(path: any): void {
 
         if (this.state.mainRepositoryName !== "") {
             let defaultRepository: String = this.state.mainRepositoryName;
@@ -161,30 +161,35 @@ export default class App extends React.Component<Props, State> {
                 .prompt('Description', 'You should type description for this file', "")
                 .then((description: String) => {
                     des = description;
-                    let tags: String = "tags";
 
                     smalltalk
                         .prompt('Tags', 'You should type tags with space \" \"', "example: c++ thread developing")
                         .then((tag: String) => {
                             let tagArray = tag.split(" ").filter(n => n);
+                            let fileNames: String[] = [];
+                            if (path.indexOf(":") !== -1)
+                                fileNames = path.split("\\");
+                            else
+                                fileNames = path.split("/");
                             let file = {
                                 "owner-name": defaultRepository,
-                                "file-path": name,
-                                "description": des,
-                                "tags": tagArray,
+                                "file-name": fileNames[fileNames.length - 1],
+                                "file-path": path,
+                                "file-description": des,
+                                "file-tags": tagArray,
                             };
-                            // db.db.findOne({ "data-type": "tags" }, (err: any, docs: any) => {
+                            // db.db.findOne({ "data-type": "file-tags" }, (err: any, docs: any) => {
                             //     console.log(docs);
                             // })
                             // for (let ele of tagArray) {
-                            //     db.update({"data-type": "tags"}, )
+                            //     db.update({"data-type": "file-tags"}, )
                             // }
 
                             db.insert(file);
                             this.setState({ needUpdateFiles: true, needUpdateTags: true })
                         })
                         .catch(() => {
-                            tags = "";
+                            console.log("error")
                         });
                 })
                 .catch(() => {
@@ -247,10 +252,10 @@ export default class App extends React.Component<Props, State> {
 
         if (this.state.needUpdateTags === true) {
             db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
-                console.log(docs.map((obj: any) => { return obj["tags"] }))
+                console.log(docs.map((obj: any) => { return obj["file-tags"] }))
                 // this.setState({buttonsArray, needUpdateTags: false})
                 let tagsArray: any[] = [];
-                for (let array of docs.map((obj: any) => { return obj["tags"] })) {
+                for (let array of docs.map((obj: any) => { return obj["file-tags"] })) {
                     for (let tag of array) {
                         if (tagsArray[tag]) tagsArray[tag]++;
                         else tagsArray[tag] = 1;
@@ -273,7 +278,7 @@ export default class App extends React.Component<Props, State> {
                 for (let tag in this.state.selectedButtonArray) {
                     // filter
                 }
-                console.log(docs.map((obj: any) => { return obj["tags"] }))
+                console.log(docs.map((obj: any) => { return obj["file-tags"] }))
                 this.setState({ needUpdateFiles: false, fileArray: array })
                 // this.setState({buttonsArray, needUpdateTags: false})
             })
@@ -293,19 +298,11 @@ export default class App extends React.Component<Props, State> {
                     <Filter
                         //ButtonNum={this.state.buttonNum}
                         //ButtonsArray={this.state.buttonsArray}
-                        ButtonNum={dummyButtons.length}
+                        SetSelected={this.setSelectedButtonArray}
                         ButtonsArray={dummyButtons} />
                     <ListV
                         //fileArray={this.state.fileArray}
-                        fileArray={[{
-                            "file-path": "/root/",
-                            "description": "a file a file",
-                            "tags": ["c++", "rust"],
-                        }, {
-                            "file-path": "/dev/",
-                            "description": "two file two file",
-                            "tags": ["javascript", "rust"],
-                        }]} />
+                        fileArray={dummyFiles} />
 
                 </SplitterLayout>
             </div >

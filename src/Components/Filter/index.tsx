@@ -4,7 +4,7 @@ import './index.css'
 
 interface Props {
     ButtonsArray: String[],
-    ButtonNum: number,
+    SetSelected: Function,
 };
 
 interface State {
@@ -14,23 +14,23 @@ interface State {
 export class Filter extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = { ButtonState:[] };
+        this.state = { ButtonState: [] };
     }
     //初始化按钮数组
-    init(){
-        let {ButtonsArray,ButtonNum} = this.props;
-        ButtonsArray.map((item:any,v:any)=>{
+    init() {
+        let { ButtonsArray } = this.props;
+        ButtonsArray.map((item: any, v: any) => {
             this.state.ButtonState[item] = 0
         })
     }
-    componentWillMount() { 
+    componentWillMount() {
         this.init();
     }
     render() {
-        let {ButtonsArray,ButtonNum} = this.props;
+        let { ButtonsArray } = this.props;
         //循环渲染筛选按钮
-        let ButtonDom:any = ButtonsArray.map((item:any,v:any)=>{
-            return <button key={item} onClick={this.clickButton.bind(this,item)} className={this.state.ButtonState[item] === 1 ? "targetButton" : ""}>{item}</button>
+        let ButtonDom: any = ButtonsArray.map((item: any, v: any) => {
+            return <button key={item} onClick={this.clickButton.bind(this, item)} className={this.state.ButtonState[item] === 1 ? "targetButton" : ""}>{item}</button>
         });
         return (<div className="buttonList">
             {ButtonDom}
@@ -38,8 +38,8 @@ export class Filter extends React.Component<Props, State> {
     }
 
     //点击筛选按钮
-    clickButton(buttonName:any):void{
-        switch(this.state.ButtonState[buttonName]){
+    clickButton(buttonName: any): void {
+        switch (this.state.ButtonState[buttonName]) {
             // 未选中
             case 0:
                 this.state.ButtonState[buttonName] = 1;
@@ -50,7 +50,7 @@ export class Filter extends React.Component<Props, State> {
                 break;
         }
         let arr = this.state.ButtonState
-        this.setState({ ButtonState:arr })
+        this.setState({ ButtonState: arr })
     }
     // componentDidMount() { }
 

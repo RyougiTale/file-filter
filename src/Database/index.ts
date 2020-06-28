@@ -120,17 +120,14 @@ class Database {
     find(something: any) {
         return this.db.find(something);
     }
+
     insert(something: any) {
         this.db.insert(something);
         this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
             console.log(something);
             console.log(docs[0]["repository-path"])
-            let old: any;
-            if (something["file-path"].indexOf(":") !== -1)
-                old = something["file-path"].split("\\");
-            else
-                old = something["file-path"].split("/");
-            fse.move(something["file-path"], docs[0]["repository-path"] + `/${old[old.length - 1]}`, (err: any) => {
+            console.log(docs[0]["repository-path"] + `/${something["file-name"]}`)
+            fse.move(something["file-path"], docs[0]["repository-path"] + `/${something["file-name"]}`, (err: any) => {
                 console.log(err);
             })
 

@@ -273,6 +273,7 @@ export default class App extends React.Component<Props, State> {
         }
 
         if (this.state.needUpdateFiles === true) {
+            // MyDatabase.find({"tags":{$in: ["a","c"]}},(err,docs)=>{console.log(docs)})
             db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
                 let array: any[] = [];
                 for (let tag in this.state.selectedButtonArray) {

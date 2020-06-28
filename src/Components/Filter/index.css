@@ -4,7 +4,7 @@
     flex-wrap: wrap;
     transition: .35s ease;
     height: 100%;
-    overflow: scroll;
+    overflow-y: scroll;
 }
 
 /* 按钮列表的按钮颜色 */

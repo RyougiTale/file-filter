@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button } from '@material-ui/core'
 
 interface Props {
-    depositoryArray: String[],
+    repositoryArray: String[],
     callBack: Function,
 };
 
@@ -19,7 +19,7 @@ export default class Choose extends React.Component<Props, State> {
 
     render() {
         let buttons = [];
-        for (let ele of this.props.depositoryArray) {
+        for (let ele of this.props.repositoryArray) {
             buttons.push(<Button
                 style={{
 

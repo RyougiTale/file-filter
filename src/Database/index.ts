@@ -13,30 +13,30 @@ const move = require('../Common/move')
 class Database {
     db: any;
     haveListen: boolean;
-    depositoryNum: number;
-    defaultDepository: any;
+    repositoryNum: number;
+    defaultRepository: any;
     defaultPath: any;
 
     constructor() {
         this.db = remote.getGlobal('MyDatabase');
         console.log(this.db);
-        this.depositoryNum = 0;
+        this.repositoryNum = 0;
         this.haveListen = false;
-        this.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
+        this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
             if (docs.length == 0) {
-                this.defaultDepository = null;
+                this.defaultRepository = null;
             }
             else {
-                this.defaultDepository = docs[0];
+                this.defaultRepository = docs[0];
             }
         });
 
         // this.db = remote.getGlobal('MyDatabase');
     }
 
-    getDepositorys(): any {
-        this.db.find({ "data-type": "depository" }, (err: any, docs: any) => {
-            this.depositoryNum = docs.length;
+    getRepositorys(): any {
+        this.db.find({ "data-type": "repository" }, (err: any, docs: any) => {
+            this.repositoryNum = docs.length;
             console.log(`[story] ${docs}`);
             console.log(docs);
             if (docs.length == 0) {
@@ -48,9 +48,9 @@ class Database {
         });
     }
 
-    getDefaulDepository(callback: any): any {
+    getDefaulRepository(callback: any): any {
 
-        this.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
+        this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
             console.log(`[story] ${docs}`);
             console.log(docs)
             if (docs.length == 0) {
@@ -62,7 +62,7 @@ class Database {
         });
     }
 
-    createDepository(): any {
+    createRepository(): any {
         return new Promise(resolve => {
             ipcRenderer.send('open-file-dialog');
             if (!this.haveListen) {
@@ -71,27 +71,27 @@ class Database {
                 ipcRenderer.on('selected-directory', (event: any, path: any) => {
                     this.defaultPath = path;
                     smalltalk
-                        .prompt('Depository', 'You are Creating a Depository, Please enter depository name', "")
-                        .then((depositoryName: String) => {
+                        .prompt('Repository', 'You are Creating a Repository, Please enter repository name', "")
+                        .then((repositoryName: String) => {
                             let dep = {
-                                "data-type": "depository",
-                                "depository-type": 'normal',
-                                "depository-index": this.depositoryNum,
-                                "depository-date": new Date(),
-                                "depository-name": depositoryName,
-                                "depository-path": this.defaultPath
+                                "data-type": "repository",
+                                "repository-type": 'normal',
+                                "repository-index": this.repositoryNum,
+                                "repository-date": new Date(),
+                                "repository-name": repositoryName,
+                                "repository-path": this.defaultPath
                             };
                             this.db.insert(dep, (err: any, newDoc: any) => {
                                 console.log(err);
                             });
-                            if (this.depositoryNum === 0) {
-                                this.SetDefaultDepository(depositoryName);
+                            if (this.repositoryNum === 0) {
+                                this.SetDefaultRepository(repositoryName);
                             }
                             resolve();
                         })
                         .catch(() => {
                             smalltalk
-                                .alert('Error', 'fail to create depository!')
+                                .alert('Error', 'fail to create repository!')
                                 .then(() => {
                                     console.log('ok');
                                 });
@@ -101,17 +101,17 @@ class Database {
         });
     }
 
-    SetDefaultDepository(name: String): any {
-        this.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
+    SetDefaultRepository(name: String): any {
+        this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
             console.log(`[story] ${docs}`);
             if (docs.length == 0) {
             }
             else {
-                this.db.update({ "depository-type": 'main' }, { $set: { "depository-type": 'normal' } }, {}, function (err: any, numReplaced: any) {
+                this.db.update({ "repository-type": 'main' }, { $set: { "repository-type": 'normal' } }, {}, function (err: any, numReplaced: any) {
                     console.log(err);
                 })
             }
-            this.db.update({ "depository-name": name }, { $set: { "depository-type": 'main' } }, {}, function (err: any, numReplaced: any) {
+            this.db.update({ "repository-name": name }, { $set: { "repository-type": 'main' } }, {}, function (err: any, numReplaced: any) {
                 console.log(err);
             })
         });
@@ -122,15 +122,15 @@ class Database {
     }
     insert(something: any) {
         this.db.insert(something);
-        this.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
+        this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
             console.log(something);
-            console.log(docs[0]["depository-path"])
+            console.log(docs[0]["repository-path"])
             let old: any;
             if (something["file-path"].indexOf(":") !== -1)
                 old = something["file-path"].split("\\");
             else
                 old = something["file-path"].split("/");
-            fse.move(something["file-path"], docs[0]["depository-path"] + `/${old[old.length - 1]}`, (err: any) => {
+            fse.move(something["file-path"], docs[0]["repository-path"] + `/${old[old.length - 1]}`, (err: any) => {
                 console.log(err);
             })
 

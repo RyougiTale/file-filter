@@ -7,14 +7,14 @@ import App from './App'
 
 
 
-// db.db.find({ "depository-type": "main" }, (err: any, docs: any) => {
+// db.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
 //   console.log(`[story] ${docs}`);
 //   console.log(docs)
 //   if (docs.length == 0) {
-//     db.createDepository();
+//     db.createRepository();
 //   }
 //   else {
-//     let defaultDepository = docs[0];
+//     let defaultRepository = docs[0];
 //     let des: String = "";
 //     smalltalk
 //       .prompt('Description', 'You should type description for this file', "")
@@ -25,7 +25,7 @@ import App from './App'
 //           .prompt('Tags', 'You should type tags with space \" \"', "example: c++ thread developing")
 //           .then((tag: String) => {
 //             let file = {
-//               "owner-name": defaultDepository["depository-name"],
+//               "owner-name": defaultRepository["repository-name"],
 //               "file-path": name,
 //               "description": des,
 //               "tags": tag.split(" ").filter(n => n),

@@ -13,6 +13,9 @@ import { ListV } from '../Components/ListV'
 // Import the styles here to process them with webpack
 import '@public/style.css';
 import Choose from '@/Components/Choose';
+const SplitterLayout = require('react-splitter-layout/lib').default
+import 'react-splitter-layout/lib/index.css';
+import { dummyButtons } from '../Common/dummydata';
 
 
 
@@ -20,12 +23,12 @@ interface Props {
 };
 
 interface State {
-    mainDepositoryName: String,
+    mainRepositoryName: String,
 
     buttonNum: number,
     buttonsArray: String[],
     selectedButtonArray: String[],
-    depositoryArray: String[],
+    repositoryArray: String[],
     fileArray: any[],
 
     needInit: boolean,
@@ -39,13 +42,13 @@ export default class App extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = { mainDepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: ["all-files"], depositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [] };
-        this.setMainDepositoryName = this.setMainDepositoryName.bind(this)
+        this.state = { mainRepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: ["all-files"], repositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [] };
+        this.setMainRepositoryName = this.setMainRepositoryName.bind(this)
     }
 
-    setMainDepositoryName(value: string) {
+    setMainRepositoryName(value: string) {
         this.setState({
-            mainDepositoryName: value,
+            mainRepositoryName: value,
         })
     }
 
@@ -67,18 +70,18 @@ export default class App extends React.Component<Props, State> {
     initMenu() {
         let sub: any = [
             {
-                label: 'create depository',
+                label: 'create repository',
                 click() {
                     ipcRenderer.send('open-file-dialog');
                 }
             },
         ]
-        db.db.find({ "data-type": "depository" }, (err: any, docs: any) => {
+        db.db.find({ "data-type": "repository" }, (err: any, docs: any) => {
             console.log(docs);
             if (docs.length !== 0) {
                 for (let ele of docs) {
                     sub.push({
-                        label: ele["depository-name"],
+                        label: ele["repository-name"],
                         click() {
                             this.
                                 console.log(ele);
@@ -125,7 +128,7 @@ export default class App extends React.Component<Props, State> {
                 }]
             },
             {
-                label: 'depository',
+                label: 'repository',
                 submenu: sub
             },
             ];
@@ -151,8 +154,8 @@ export default class App extends React.Component<Props, State> {
 
     saveFile(name: any): void {
 
-        if (this.state.mainDepositoryName !== "") {
-            let defaultDepository: String = this.state.mainDepositoryName;
+        if (this.state.mainRepositoryName !== "") {
+            let defaultRepository: String = this.state.mainRepositoryName;
             let des: String = "";
             smalltalk
                 .prompt('Description', 'You should type description for this file', "")
@@ -165,7 +168,7 @@ export default class App extends React.Component<Props, State> {
                         .then((tag: String) => {
                             let tagArray = tag.split(" ").filter(n => n);
                             let file = {
-                                "owner-name": defaultDepository,
+                                "owner-name": defaultRepository,
                                 "file-path": name,
                                 "description": des,
                                 "tags": tagArray,
@@ -212,26 +215,23 @@ export default class App extends React.Component<Props, State> {
             return (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Button onClick={() => {
-                        db.createDepository().then(() => {
+                        db.createRepository().then(() => {
                             this.setState({ needInit: false })
                         });
-                    }}>You need init your depository</Button>
+                    }}>You need init your repository</Button>
                 </div>
             );
         }
-
-
-        if (this.state.mainDepositoryName === "") {
-            if (this.state.depositoryArray.length === 0) {
-
-                db.db.find({ "data-type": "depository" }, (err: any, docs: any) => {
+        if (this.state.mainRepositoryName === "") {
+            if (this.state.repositoryArray.length === 0) {
+                db.db.find({ "data-type": "repository" }, (err: any, docs: any) => {
                     console.log(`[story] ${docs}`);
                     console.log(docs);
                     if (docs.length == 0) {
                         this.setState({ needInit: true })
                     }
                     else {
-                        this.setState({ depositoryArray: docs.map((obj: any) => { return obj["depository-name"] }) });
+                        this.setState({ repositoryArray: docs.map((obj: any) => { return obj["repository-name"] }) });
                     }
                 });
                 return (
@@ -241,14 +241,12 @@ export default class App extends React.Component<Props, State> {
                 );
             }
             else {
-                return <Choose depositoryArray={this.state.depositoryArray} callBack={this.setMainDepositoryName} />
-
+                return <Choose repositoryArray={this.state.repositoryArray} callBack={this.setMainRepositoryName} />
             }
-
         }
 
         if (this.state.needUpdateTags === true) {
-            db.db.find({ "owner-name": this.state.mainDepositoryName }, (err: any, docs: any) => {
+            db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
                 console.log(docs.map((obj: any) => { return obj["tags"] }))
                 // this.setState({buttonsArray, needUpdateTags: false})
                 let tagsArray: any[] = [];
@@ -270,7 +268,7 @@ export default class App extends React.Component<Props, State> {
         }
 
         if (this.state.needUpdateFiles === true) {
-            db.db.find({ "owner-name": this.state.mainDepositoryName }, (err: any, docs: any) => {
+            db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
                 let array: any[] = [];
                 for (let tag in this.state.selectedButtonArray) {
                     // filter
@@ -291,71 +289,25 @@ export default class App extends React.Component<Props, State> {
                 width: '100%',
                 height: '100%'
             }}>
-                <Filter
-                    //ButtonNum={this.state.buttonNum}
-                    //ButtonsArray={this.state.buttonsArray}
-                    ButtonNum={40}
-                    ButtonsArray={["C",
-                        "Java",
-                        "Python",
-                        "C++",
-                        "C#",
-                        "Visual Basic",
-                        "JavaScript",
-                        "PHP",
-                        "R",
-                        "SQL",
-                        "Swift",
-                        "Go",
-                        "Ruby",
-                        "Assembly language",
-                        "MATLAB",
-                        "Perl",
-                        "PL/SQL",
-                        "Scratch",
-                        "Classic Visual Basic",
-                        "Rust",
-                        "Objective-C",
-                        "Delphi/Object Pascal",
-                        "D",
-                        "Lisp",
-                        "Dart",
-                        "SAS",
-                        "Transact-SQL",
-                        "Logo",
-                        "COBOL",
-                        "Kotlin",
-                        "Groovy",
-                        "Scala",
-                        "Julia",
-                        "ABAP",
-                        "PowerShell",
-                        "OpenEdge ABL",
-                        "Fortran",
-                        "Lua",
-                        "VBScript",
-                        "Ada",
-                        "FoxPro",
-                        "ML",
-                        "LabVIEW",
-                        "TypeScript",
-                        "Haskell",
-                        "Scheme",
-                        "Prolog",
-                        "ActionScript",
-                        "Bash",]} />
-                <ListV
-                    //fileArray={this.state.fileArray}
-                    fileArray={[{
-                        "file-path": "/root/",
-                        "description": "a file a file",
-                        "tags": ["c++", "rust"],
-                    }, {
-                        "file-path": "/dev/",
-                        "description": "two file two file",
-                        "tags": ["javascript", "rust"],
-                    }]} />
+                <SplitterLayout vertical={false}>
+                    <Filter
+                        //ButtonNum={this.state.buttonNum}
+                        //ButtonsArray={this.state.buttonsArray}
+                        ButtonNum={dummyButtons.length}
+                        ButtonsArray={dummyButtons} />
+                    <ListV
+                        //fileArray={this.state.fileArray}
+                        fileArray={[{
+                            "file-path": "/root/",
+                            "description": "a file a file",
+                            "tags": ["c++", "rust"],
+                        }, {
+                            "file-path": "/dev/",
+                            "description": "two file two file",
+                            "tags": ["javascript", "rust"],
+                        }]} />
 
+                </SplitterLayout>
             </div >
         );
 

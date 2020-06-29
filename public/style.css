@@ -7,3 +7,31 @@ html, body {
   height: 100%;
   width: 100%;
 }
+
+/* 页面一 */
+
+/* 选择文件按钮 */
+.needInit{
+  color: #e4e4e4;
+  transition: .35s ease;
+  font-size: 16px;
+  padding: 10px 20px;
+  background: none;
+  cursor: pointer;
+  border: none;
+  /* 去除选中时的蓝色边框 */
+  outline:none;
+}
+/* 选择文件按钮鼠标悬浮效果 */
+.needInit:hover{
+  background:rgba(255,255,255,.1)
+}
+.needInit:hover::before{
+  width: 100%;
+  height: 2px;
+  background: #ffffff;
+}
+
+/* 页面二 */
+
+/* 页面三 */

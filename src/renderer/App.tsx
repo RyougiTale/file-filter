@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Button, CircularProgress } from '@material-ui/core/';
+import { CircularProgress } from '@material-ui/core/';
 import { ipcRenderer, remote } from 'electron';
 import { key_word } from '../Common/db'
 // import Datastore from '../../node_modules/nedb'
@@ -219,11 +219,11 @@ export default class App extends React.Component<Props, State> {
         if (this.state.needInit === true) {
             return (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Button onClick={() => {
+                    <button className="needInit" onClick={() => {
                         db.createRepository().then(() => {
                             this.setState({ needInit: false })
                         });
-                    }}>You need init your repository</Button>
+                    }}>You need init your repository</button>
                 </div>
             );
         }
@@ -240,7 +240,7 @@ export default class App extends React.Component<Props, State> {
                     }
                 });
                 return (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="mainRepository" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <CircularProgress />
                     </div>
                 );

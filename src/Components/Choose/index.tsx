@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from '@material-ui/core'
+import './index.css'
 
 interface Props {
     repositoryArray: String[],
@@ -20,7 +20,8 @@ export default class Choose extends React.Component<Props, State> {
     render() {
         let buttons = [];
         for (let ele of this.props.repositoryArray) {
-            buttons.push(<Button
+            buttons.push(<button
+                className="warehouseButton"
                 style={{
 
                 }}
@@ -31,7 +32,7 @@ export default class Choose extends React.Component<Props, State> {
                 }}
 
 
-            >{ele}</Button>)
+            >{ele}</button>)
         }
         return (<div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{buttons}</div>)
     }

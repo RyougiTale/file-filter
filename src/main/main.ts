@@ -4,6 +4,7 @@
 import { app, BrowserWindow, ipcMain, dialog, Menu, shell, ipcRenderer } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
+import { dummyButtons, dummyFiles } from '../Common/dummydata';
 const Datastore = require('../../node_modules/nedb')
 const globalAny: any = global;
 let db: any;
@@ -12,8 +13,7 @@ let mainWindow: Electron.BrowserWindow | null;
 
 const isMac = process.platform === 'darwin'
 
-
-
+const use_dummy_data = true;
 
 function createWindow(): void {
     // Create the browser window.
@@ -37,6 +37,49 @@ function createWindow(): void {
         })
     );
     let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
+    if (use_dummy_data) {
+        MyDatabase.remove({}, { multi: true }, (err: any, docs: any) => { console.log(err) });
+        let rep0 = {
+            "data-type": "repository",
+            "repository-type": 'main',
+            "repository-index": 0,
+            "repository-date": new Date(),
+            "repository-name": "rep No.0",
+            "repository-path": "/"
+        };
+        MyDatabase.insert(rep0, (err: any, newDoc: any) => {
+            // console.log(err);
+        });
+        let rep1 = {
+            "data-type": "repository",
+            "repository-type": 'normal',
+            "repository-index": 1,
+            "repository-date": new Date(),
+            "repository-name": "rep No.1",
+            "repository-path": "/"
+        };
+        MyDatabase.insert(rep1, (err: any, newDoc: any) => {
+            // console.log(err);
+        });
+        for (let i = 0; i < 30; i++) {
+            let file: any = {
+
+                "file-name": dummyFiles[i]['file-name'],
+                "file-path": dummyFiles[i]["file-path"],
+                "file-description": dummyFiles[i]['file-description'],
+                "file-tags": dummyFiles[i]['file-tags'],
+            };
+            if (i < 7) {
+                file["owner-name"] = "rep No.0";
+            }
+            else {
+                file["owner-name"] = "rep No.1";
+            }
+            MyDatabase.insert(file);
+        }
+
+    }
+
     globalAny.MyDatabase = MyDatabase;
 
     ipcMain.on('ondragstart', (event: any, filePath: any) => {

@@ -21,6 +21,7 @@ export class ListV extends React.Component<Props, State> {
     componentWillMount() { }
 
     makeCard(filename: String, filepath: String, description: String, tags: String[]) {
+        console.log(filename)
         const classes: any = makeStyles({
             root: {
                 minWidth: 275,

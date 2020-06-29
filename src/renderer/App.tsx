@@ -43,7 +43,6 @@ export default class App extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = { mainRepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: ["all-files"], repositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [] };
-        this.setMainRepositoryName = this.setMainRepositoryName.bind(this)
     }
 
     setMainRepositoryName(value: string) {
@@ -55,6 +54,7 @@ export default class App extends React.Component<Props, State> {
     setSelectedButtonArray(arr: String[]) {
         this.setState({
             selectedButtonArray: arr,
+            needUpdateFiles: true,
         })
     }
 
@@ -241,12 +241,12 @@ export default class App extends React.Component<Props, State> {
                 });
                 return (
                     <div className="mainRepository" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CircularProgress />
+                        <CircularProgress color="secondary" />
                     </div>
                 );
             }
             else {
-                return <Choose repositoryArray={this.state.repositoryArray} callBack={this.setMainRepositoryName} />
+                return <Choose repositoryArray={this.state.repositoryArray} callBack={this.setMainRepositoryName.bind(this)} />
             }
         }
 
@@ -267,28 +267,46 @@ export default class App extends React.Component<Props, State> {
             })
             return (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <CircularProgress />
+                    <CircularProgress color="secondary" />
                 </div>
             );
         }
 
-        if (this.state.needUpdateFiles === true) {
+        if (this.state.needUpdateFiles === true) { // have bug
             // MyDatabase.find({"tags":{$in: ["a","c"]}},(err,docs)=>{console.log(docs)})
             // MyDatabase.find({$and: [{"tags":"a"},{"tags":"c"}]},(err,docs)=>{console.log(docs)})
             db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
                 let array: any[] = [];
-                for (let tag in this.state.selectedButtonArray) {
+                console.log(this.state.selectedButtonArray)
+                if (this.state.selectedButtonArray.length === 0) {
+                    for (let file of docs) {
+                        array.push(file);
+                    }
+                    console.log(array)
+                    this.setState({ needUpdateFiles: false, fileArray: array })
+                    return;
+                }
+                let findArgs: any[] = [];
+                for (let tag of this.state.selectedButtonArray) {
                     // filter
+                    findArgs.push({ "file-tags": tag });
                 }
                 console.log(docs.map((obj: any) => { return obj["file-tags"] }))
-                this.setState({ needUpdateFiles: false, fileArray: array })
+                console.log(findArgs);
+                db.db.find({ $and: findArgs }, (err: any, docs: any) => {
+                    for (let file of docs) {
+                        array.push(file);
+                    }
+                    console.log(array)
+                    this.setState({ needUpdateFiles: false, fileArray: array })
+                })
                 // this.setState({buttonsArray, needUpdateTags: false})
             })
-            return (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <CircularProgress />
-                </div>
-            );
+            // return (
+            //     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            //         <CircularProgress color="secondary" />
+            //     </div>
+            // );
         }
 
         return (
@@ -299,12 +317,12 @@ export default class App extends React.Component<Props, State> {
                 <SplitterLayout vertical={false}>
                     <Filter
                         //ButtonNum={this.state.buttonNum}
-                        //ButtonsArray={this.state.buttonsArray}
-                        SetSelected={this.setSelectedButtonArray}
-                        ButtonsArray={dummyButtons} />
+                        ButtonsArray={this.state.buttonsArray}
+                        SetSelected={this.setSelectedButtonArray.bind(this)}
+                    />
                     <ListV
-                        //fileArray={this.state.fileArray}
-                        fileArray={dummyFiles} />
+                        fileArray={this.state.fileArray}
+                    />
 
                 </SplitterLayout>
             </div >

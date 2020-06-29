@@ -51,6 +51,12 @@ export class Filter extends React.Component<Props, State> {
         }
         let arr = this.state.ButtonState
         this.setState({ ButtonState: arr })
+
+        /* to deleted */
+        let selected = [];
+        for (let ele in arr) if (arr[ele] == 1) selected.push(ele);
+        console.log(selected);
+        this.props.SetSelected(selected);
     }
     // componentDidMount() { }
 

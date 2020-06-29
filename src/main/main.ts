@@ -38,7 +38,7 @@ function createWindow(): void {
     );
     let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
     if (use_dummy_data) {
-        MyDatabase.remove({}, { multi: true }, (err: any, docs: any) => { console.log(err) });
+        MyDatabase.remove({}, { multi: true }, (err: any, docs: any) => { });
         let rep0 = {
             "data-type": "repository",
             "repository-type": 'main',

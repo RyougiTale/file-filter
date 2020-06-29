@@ -11,13 +11,15 @@
 .buttonList button{
     width: 150px;
     margin: 0;
-    padding: 10px 20px;
+    padding: 10px 20px 7px;
     border: none;
-    border-bottom: 2px rgba(0,0,0,0);
+    border-bottom: 3px rgba(255,255,255,0) solid;
     background: rgba(255,255,255,.1);
     transition: .35s ease;
     margin: 5px 10px;
     cursor: pointer;
+    color: rgb(219, 219, 219);
+
 
     /* 去除选中时的蓝色边框 */
     outline:none;
@@ -29,7 +31,7 @@
 }
 /* 选中效果 */
 .targetButton{
-    border-bottom: 3px rgb(255, 190, 50) !important;
+    border-bottom: 3px rgb(255, 190, 50) solid !important;
     background: rgba(255,255,255,.4) !important;
     box-shadow: 0 0 10px 1px rgba(0,0,0,.1);
 }

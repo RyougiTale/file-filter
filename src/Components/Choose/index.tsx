@@ -34,7 +34,7 @@ export default class Choose extends React.Component<Props, State> {
 
             >{ele}</button>)
         }
-        return (<div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{buttons}</div>)
+        return (<div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap' }}>{buttons}</div>)
     }
 
     componentDidMount() { }

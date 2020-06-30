@@ -42,7 +42,7 @@ export default class App extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = { mainRepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: ["all-files"], repositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [] };
+        this.state = { mainRepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: [], repositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [] };
     }
 
     setMainRepositoryName(value: string) {

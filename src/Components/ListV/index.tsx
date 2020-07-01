@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/';
 import { Card, CardActions, CardContent, Typography, Button } from '@material-ui/core/';
-
+const { shell } = require('electron')
 
 
 
@@ -39,12 +39,12 @@ export class ListV extends React.Component<Props, State> {
             },
         });
         const bull = <span className={classes.bullet}>•</span>;
-        return (<Card className={classes.root} key={filename.toString()}>
+        return (<Card color={"primary"} className={classes.root} key={filename.toString()}>
             <CardContent>
                 {/* <Typography className={classes.title} color="textSecondary" gutterBottom>
                     {filepath}
                 </Typography> */}
-                <Typography variant="h5" component="h2">
+                <Typography color={"primary"} variant="h5" component="h2">
                     {bull}{filename}{bull}
                 </Typography>
                 <Typography className={classes.pos} color="textSecondary">
@@ -56,7 +56,9 @@ export class ListV extends React.Component<Props, State> {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button size="small">Open it</Button>
+                <Button size="small" color={"primary"} onClick={() => {
+                    shell.showItemInFolder(filepath.toString());
+                }}>Open it</Button>
             </CardActions>
         </Card>);
     }

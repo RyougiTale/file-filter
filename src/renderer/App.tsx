@@ -15,7 +15,6 @@ import '@public/style.css';
 import Choose from '@/Components/Choose';
 const SplitterLayout = require('react-splitter-layout/lib').default
 import 'react-splitter-layout/lib/index.css';
-import { dummyButtons, dummyFiles } from '../Common/dummydata';
 
 
 
@@ -34,6 +33,7 @@ interface State {
     needInit: boolean,
     needUpdateTags: boolean,
     needUpdateFiles: boolean,
+    needFresh: boolean,
 }
 
 let db: any = new Database();
@@ -42,7 +42,11 @@ export default class App extends React.Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = { mainRepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: ["all-files"], repositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [] };
+        this.state = {
+            mainRepositoryName: "", buttonNum: 0, buttonsArray: [], selectedButtonArray: [],
+            repositoryArray: [], needInit: false, needUpdateTags: true, needUpdateFiles: true, fileArray: [],
+            needFresh: false
+        };
     }
 
     setMainRepositoryName(value: string) {
@@ -71,8 +75,10 @@ export default class App extends React.Component<Props, State> {
         let sub: any = [
             {
                 label: 'create repository',
-                click() {
-                    ipcRenderer.send('open-file-dialog');
+                click: () => {
+                    // db.createRepository().then(() => {
+                    // });
+                    this.setState({ needInit: true })
                 }
             },
         ]
@@ -82,9 +88,8 @@ export default class App extends React.Component<Props, State> {
                 for (let ele of docs) {
                     sub.push({
                         label: ele["repository-name"],
-                        click() {
-                            this.
-                                console.log(ele);
+                        click: () => {
+                            this.setState({ mainRepositoryName: ele["repository-name"], needUpdateTags: true, needUpdateFiles: true })
                         }
                     })
                 }
@@ -221,14 +226,14 @@ export default class App extends React.Component<Props, State> {
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <button className="needInit" onClick={() => {
                         db.createRepository().then(() => {
-                            this.setState({ needInit: false })
+                            this.setState({ needInit: false, needFresh: true })
                         });
                     }}>You need init your repository</button>
                 </div>
             );
         }
         if (this.state.mainRepositoryName === "") {
-            if (this.state.repositoryArray.length === 0) {
+            if (this.state.repositoryArray.length === 0 || this.state.needFresh === true) {
                 db.db.find({ "data-type": "repository" }, (err: any, docs: any) => {
                     console.log(`[story] ${docs}`);
                     console.log(docs);
@@ -238,6 +243,7 @@ export default class App extends React.Component<Props, State> {
                     else {
                         this.setState({ repositoryArray: docs.map((obj: any) => { return obj["repository-name"] }) });
                     }
+                    this.setState({ needFresh: false });
                 });
                 return (
                     <div className="mainRepository" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -261,6 +267,7 @@ export default class App extends React.Component<Props, State> {
                         else tagsArray[tag] = 1;
                     }
                 }
+                console.log(tagsArray);
                 let keysSorted = Object.keys(tagsArray).sort(function (a: any, b: any) { return tagsArray[b] - tagsArray[a] })
                 console.log(keysSorted);
                 this.setState({ buttonsArray: keysSorted, needUpdateTags: false })
@@ -272,7 +279,7 @@ export default class App extends React.Component<Props, State> {
             );
         }
 
-        if (this.state.needUpdateFiles === true) { // have bug
+        if (this.state.needUpdateFiles === true) {
             // MyDatabase.find({"tags":{$in: ["a","c"]}},(err,docs)=>{console.log(docs)})
             // MyDatabase.find({$and: [{"tags":"a"},{"tags":"c"}]},(err,docs)=>{console.log(docs)})
             db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
@@ -293,6 +300,7 @@ export default class App extends React.Component<Props, State> {
                 }
                 console.log(docs.map((obj: any) => { return obj["file-tags"] }))
                 console.log(findArgs);
+                findArgs.push({ "owner-name": this.state.mainRepositoryName });
                 db.db.find({ $and: findArgs }, (err: any, docs: any) => {
                     for (let file of docs) {
                         array.push(file);

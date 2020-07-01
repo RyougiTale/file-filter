@@ -83,11 +83,11 @@ class Database {
                             };
                             this.db.insert(dep, (err: any, newDoc: any) => {
                                 console.log(err);
+                                if (this.repositoryNum === 0) {
+                                    this.SetDefaultRepository(repositoryName);
+                                }
+                                resolve();
                             });
-                            if (this.repositoryNum === 0) {
-                                this.SetDefaultRepository(repositoryName);
-                            }
-                            resolve();
                         })
                         .catch(() => {
                             smalltalk

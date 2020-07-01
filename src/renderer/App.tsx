@@ -2,21 +2,15 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { CircularProgress } from '@material-ui/core/';
 import { ipcRenderer, remote } from 'electron';
-import { key_word } from '../Common/db'
-// import Datastore from '../../node_modules/nedb'
 import { Database } from '../Database';
 const smalltalk = require('smalltalk');
 const { Menu } = require('electron').remote
 import { Filter } from '../Components/Filter'
 import { ListV } from '../Components/ListV'
-// import Nedb = require("../../node_modules/@types/nedb")
-// Import the styles here to process them with webpack
 import '@public/style.css';
 import Choose from '@/Components/Choose';
 const SplitterLayout = require('react-splitter-layout/lib').default
 import 'react-splitter-layout/lib/index.css';
-
-
 
 interface Props {
 };
@@ -63,7 +57,6 @@ export default class App extends React.Component<Props, State> {
     }
 
     shouldComponentUpdate(nextProps: Props, nextState: State) {
-        // console.log(nextState);
         if (nextState !== this.state) {
             console.log("update" + nextState);
             return true;
@@ -76,8 +69,6 @@ export default class App extends React.Component<Props, State> {
             {
                 label: 'create repository',
                 click: () => {
-                    // db.createRepository().then(() => {
-                    // });
                     this.setState({ needInit: true })
                 }
             },
@@ -145,7 +136,6 @@ export default class App extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        // this.listenDrag();
         this.initMenu();
         console.log(__dirname);
         document.ondragover = document.ondrop = (ev) => {
@@ -158,7 +148,6 @@ export default class App extends React.Component<Props, State> {
     }
 
     saveFile(path: any): void {
-
         if (this.state.mainRepositoryName !== "") {
             let defaultRepository: String = this.state.mainRepositoryName;
             let des: String = "";
@@ -189,7 +178,6 @@ export default class App extends React.Component<Props, State> {
                             // for (let ele of tagArray) {
                             //     db.update({"data-type": "file-tags"}, )
                             // }
-
                             db.insert(file);
                             this.setState({ needUpdateFiles: true, needUpdateTags: true })
                         })
@@ -204,7 +192,6 @@ export default class App extends React.Component<Props, State> {
 
     }
     //popup
-
 
     listenDrag(): void {
         if (document.getElementById('drag')) {
@@ -308,7 +295,6 @@ export default class App extends React.Component<Props, State> {
                     console.log(array)
                     this.setState({ needUpdateFiles: false, fileArray: array })
                 })
-                // this.setState({buttonsArray, needUpdateTags: false})
             })
             // return (
             //     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -4,10 +4,8 @@ import { remote, ipcRenderer } from 'electron';
 const smalltalk = require('smalltalk');
 const fse = require('fs-extra')
 const move = require('../Common/move')
-
 // let db: any = remote.getGlobal('MyDatabase');
 // let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
-
 
 
 class Database {

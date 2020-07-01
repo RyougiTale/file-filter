@@ -4,15 +4,15 @@
 import { app, BrowserWindow, ipcMain, dialog, Menu, shell, ipcRenderer } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import { dummyButtons, dummyFiles } from '../Common/dummydata';
+//main Window
+let mainWindow: Electron.BrowserWindow | null;
+const isMac = process.platform === 'darwin'
+//global database db
 const Datastore = require('../../node_modules/nedb')
 const globalAny: any = global;
 let db: any;
-
-let mainWindow: Electron.BrowserWindow | null;
-
-const isMac = process.platform === 'darwin'
-
+//dummy data
+import { dummyButtons, dummyFiles } from '../Common/dummydata';
 const use_dummy_data = true;
 
 function createWindow(): void {
@@ -23,12 +23,11 @@ function createWindow(): void {
         webPreferences: {
             webSecurity: false,
             devTools: process.env.NODE_ENV === 'production' ? false : true,
-
-        }
+        },
     });
-
+    //open console
     mainWindow.webContents.openDevTools({ mode: "detach" });
-    // and load the index.html of the app.
+    // load the index.html of the app.
     mainWindow.loadURL(
         url.format({
             pathname: path.join(__dirname, './index.html'),
@@ -36,7 +35,10 @@ function createWindow(): void {
             slashes: true
         })
     );
+    //init database in main.ts
     let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
+    globalAny.MyDatabase = MyDatabase;
+    //load dummy data
     if (use_dummy_data) {
         MyDatabase.remove({}, { multi: true }, (err: any, docs: any) => { });
         let rep0 = {
@@ -47,9 +49,7 @@ function createWindow(): void {
             "repository-name": "rep No.0",
             "repository-path": "/"
         };
-        MyDatabase.insert(rep0, (err: any, newDoc: any) => {
-            // console.log(err);
-        });
+        MyDatabase.insert(rep0, (err: any, newDoc: any) => {});
         let rep1 = {
             "data-type": "repository",
             "repository-type": 'normal',
@@ -58,9 +58,7 @@ function createWindow(): void {
             "repository-name": "rep No.1",
             "repository-path": "/"
         };
-        MyDatabase.insert(rep1, (err: any, newDoc: any) => {
-            // console.log(err);
-        });
+        MyDatabase.insert(rep1, (err: any, newDoc: any) => {});
         for (let i = 0; i < 30; i++) {
             let file: any = {
 
@@ -77,22 +75,18 @@ function createWindow(): void {
             }
             MyDatabase.insert(file);
         }
-
     }
-
-    globalAny.MyDatabase = MyDatabase;
 
     ipcMain.on('ondragstart', (event: any, filePath: any) => {
         console.log(event);
         console.log(filePath);
         console.log(filePath);
-
         event.sender.startDrag({
             file: filePath,
             icon: '/path/to/icon.png'
         })
     })
-
+    //open file
     ipcMain.on('open-file-dialog', (event: any) => {
         dialog.showOpenDialog({
             properties: ['openFile', 'openDirectory']
@@ -102,7 +96,6 @@ function createWindow(): void {
             }
         })
     })
-
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
         // Dereference the window object, usually you would store windows

@@ -15,6 +15,7 @@ let db: any;
 import { dummyButtons, dummyFiles } from '../Common/dummydata';
 const use_dummy_data = true;
 
+
 function createWindow(): void {
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -49,7 +50,7 @@ function createWindow(): void {
             "repository-name": "rep No.0",
             "repository-path": "/"
         };
-        MyDatabase.insert(rep0, (err: any, newDoc: any) => {});
+        MyDatabase.insert(rep0, (err: any, newDoc: any) => { });
         let rep1 = {
             "data-type": "repository",
             "repository-type": 'normal',
@@ -58,7 +59,7 @@ function createWindow(): void {
             "repository-name": "rep No.1",
             "repository-path": "/"
         };
-        MyDatabase.insert(rep1, (err: any, newDoc: any) => {});
+        MyDatabase.insert(rep1, (err: any, newDoc: any) => { });
         for (let i = 0; i < 30; i++) {
             let file: any = {
 

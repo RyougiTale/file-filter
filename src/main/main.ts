@@ -13,7 +13,7 @@ const globalAny: any = global;
 let db: any;
 //dummy data
 import { dummyButtons, dummyFiles } from '../Common/dummydata';
-const use_dummy_data = true;
+const use_dummy_data = false;
 
 
 function createWindow(): void {
@@ -27,7 +27,7 @@ function createWindow(): void {
         },
     });
     //open console
-    mainWindow.webContents.openDevTools({ mode: "detach" });
+    // mainWindow.webContents.openDevTools({ mode: "detach" });
     // load the index.html of the app.
     mainWindow.loadURL(
         url.format({

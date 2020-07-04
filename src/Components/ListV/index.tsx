@@ -8,6 +8,8 @@ const { shell } = require('electron')
 
 interface Props {
     fileArray: any[],
+    deleteFile: Function,
+    editTags: Function,
 };
 
 interface State {
@@ -55,10 +57,16 @@ export class ListV extends React.Component<Props, State> {
                     {description}
                 </Typography>
             </CardContent>
-            <CardActions>
+            <CardActions style={{ display: 'flex', justifyContent: 'space-evenly' }}>
                 <Button size="small" color={"primary"} onClick={() => {
                     shell.showItemInFolder(filepath.toString());
-                }}>Open it</Button>
+                }}>Open It</Button>
+                <Button size="small" color={"primary"} onClick={() => {
+                    this.props.editTags(filename, tags)
+                }}>Edit Tags</Button>
+                <Button size="small" color={"primary"} onClick={() => {
+                    this.props.deleteFile(filename)
+                }}>Remove It</Button>
             </CardActions>
         </Card>);
     }

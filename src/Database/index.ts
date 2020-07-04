@@ -127,21 +127,21 @@ class Database {
         });
     }
 
-    find(something: any) {
-        return this.db.find(something);
-    }
+    // find(something: any) {
+    //     return this.db.find(something);
+    // }
 
-    insert(something: any) {
-        this.db.insert(something);
-        this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
-            console.log(something);
-            console.log(docs[0]["repository-path"])
-            console.log(docs[0]["repository-path"] + `/${something["file-name"]}`)
-            fse.move(something["file-path"], docs[0]["repository-path"] + `/${something["file-name"]}`, (err: any) => {
-                console.log(err);
-            })
-        });
-    }
+    // insert(something: any) {
+    //     this.db.insert(something);
+    //     this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
+    //         console.log(something);
+    //         console.log(docs[0]["repository-path"])
+    //         console.log(docs[0]["repository-path"] + `/${something["file-name"]}`)
+    //         fse.move(something["file-path"], docs[0]["repository-path"] + `/${something["file-name"]}`, (err: any) => {
+    //             console.log(err);
+    //         })
+    //     });
+    // }
 
     insertFile(ownerName: String, fileName: String, filePath: String, fileDescription: String, fileTags: String[]) {
         let newFile = {
@@ -168,7 +168,36 @@ class Database {
         })
     }
 
-    findFileByRepName(repositoryName: String) {
+    editTagsByName(fileName: String, repositoryName: String, newTags: String[]) {
+        return new Promise((resolve, reject) => {
+            this.db.update({ "owner-name": repositoryName, "file-name": fileName }, { $set: { "file-tags": newTags } }, {}, (err: any, numReplaced: any) => {
+                if (err !== null) reject(err);
+                else {
+                    resolve(numReplaced);
+                }
+            });
+        })
+    }
+
+    deleteFileByName(fileName: String, repositoryName: String) {
+        return new Promise((resolve, reject) => {
+            this.db.remove({ "owner-name": repositoryName, "file-name": fileName }, {}, (err: any, numRemoved: any) => {
+                if (err !== null) reject(err);
+                else resolve(numRemoved)
+            });
+        })
+    }
+
+    findFileByName(fileName: String, repositoryName: String) {
+        return new Promise((resolve, reject) => {
+            this.db.find({ "owner-name": repositoryName, "file-name": fileName }, (err: any, docs: any) => {
+                if (err !== null) reject(err);
+                else resolve(docs)
+            });
+        })
+    }
+
+    findFilesByRepName(repositoryName: String) {
         return new Promise((resolve, reject) => {
             this.db.find({ "owner-name": repositoryName }, (err: any, docs: any) => {
                 if (err !== null) reject(err);

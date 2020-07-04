@@ -194,6 +194,29 @@ export default class App extends React.Component<Props, State> {
         }
     }
 
+    deleteFile(filename: String) {
+        db.deleteFileByName(filename, this.state.mainRepositoryName);
+        this.setState({ needUpdateTags: true, needUpdateFiles: true });
+    }
+
+    editTags(filename: String, tags: String) {
+        smalltalk
+            .prompt('Edit Tags', 'You are Editing Tags', tags.toString().replace(/,/g, " "))
+            .then((newtags: String) => {
+                db.editTagsByName(filename, this.state.mainRepositoryName, newtags.split(" ").filter(n => n));
+                this.setState({ needUpdateTags: true, needUpdateFiles: true });
+
+            })
+            .catch(() => {
+                smalltalk
+                    .alert('Error', 'fail to edit tags!')
+                    .then(() => {
+                        console.log('ok');
+                    });
+            });
+    }
+    //main
+
     getLoading() {
         return (<div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress color="secondary" />
@@ -239,7 +262,7 @@ export default class App extends React.Component<Props, State> {
 
     checkUpdateTags() {
         if (this.state.needUpdateTags === true) {
-            db.findFileByRepName(this.state.mainRepositoryName).then((docs: any) => {
+            db.findFilesByRepName(this.state.mainRepositoryName).then((docs: any) => {
                 console.log(docs.map((obj: any) => { return obj["file-tags"] }))
                 // this.setState({buttonsArray, needUpdateTags: false})
                 let tagsArray: any[] = [];
@@ -262,7 +285,7 @@ export default class App extends React.Component<Props, State> {
         if (this.state.needUpdateFiles === true) {
             // MyDatabase.find({"tags":{$in: ["a","c"]}},(err,docs)=>{console.log(docs)})
             // MyDatabase.find({$and: [{"tags":"a"},{"tags":"c"}]},(err,docs)=>{console.log(docs)})
-            db.findFileByRepName(this.state.mainRepositoryName).then((docs: any) => {
+            db.findFilesByRepName(this.state.mainRepositoryName).then((docs: any) => {
                 let array: any[] = [];
                 console.log(this.state.selectedButtonArray)
                 if (this.state.selectedButtonArray.length === 0) {
@@ -304,6 +327,8 @@ export default class App extends React.Component<Props, State> {
                     />
                     <ListV
                         fileArray={this.state.fileArray}
+                        deleteFile={this.deleteFile.bind(this)}
+                        editTags={this.editTags.bind(this)}
                     />
 
                 </SplitterLayout>

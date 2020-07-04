@@ -148,6 +148,7 @@ export default class App extends React.Component<Props, State> {
     }
 
     saveFile(path: any): void {
+        process.noAsar = true;
         if (this.state.mainRepositoryName !== "") {
             let defaultRepository: String = this.state.mainRepositoryName;
             let des: String = "";
@@ -166,8 +167,17 @@ export default class App extends React.Component<Props, State> {
                             else
                                 fileNames = path.split("/");
                             // db.db.findOne({ "data-type": "file-tags" }, (err: any, docs: any) => {
-                            db.insertFile(defaultRepository, fileNames[fileNames.length - 1], path, des, tagArray);
-                            this.setState({ needUpdateFiles: true, needUpdateTags: true })
+                            db.insertFile(defaultRepository, fileNames[fileNames.length - 1], path, des, tagArray).then(
+                                () => { this.setState({ needUpdateFiles: true, needUpdateTags: true }) },
+                                (err) => {
+                                    smalltalk
+                                        .alert('Error', err.toString())
+                                        .then(() => {
+                                            console.log('err');
+                                        });
+                                }
+                            )
+
                         })
                         .catch(() => {
                             console.log("error")

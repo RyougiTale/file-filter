@@ -151,12 +151,21 @@ class Database {
             "file-description": fileDescription,
             "file-tags": fileTags,
         };
-        this.db.insert(newFile);
-        this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
-            fse.move(newFile["file-path"], docs[0]["repository-path"] + `/${newFile["file-name"]}`, (err: any) => {
-                console.log(err);
-            })
+        return new Promise((resolve, reject) => {
+            this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
+                fse.move(newFile["file-path"], docs[0]["repository-path"] + `/${newFile["file-name"]}`, (err: any) => {
+                    console.log(err);
+                    if (err === null) {
+                        this.db.insert(newFile);
+                        resolve();
+                    }
+                    else{
+                        reject(err);
+                    }
+                })
+            });
         });
+
     }
 
     findFile(toFind: any) {

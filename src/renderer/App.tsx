@@ -170,6 +170,7 @@ export default class App extends React.Component<Props, State> {
                             db.insertFile(defaultRepository, fileNames[fileNames.length - 1], path, des, tagArray).then(
                                 () => { this.setState({ needUpdateFiles: true, needUpdateTags: true }) },
                                 (err) => {
+                                    console.log(err)
                                     smalltalk
                                         .alert('Error', err.toString())
                                         .then(() => {

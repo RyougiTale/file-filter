@@ -152,15 +152,20 @@ class Database {
             "file-tags": fileTags,
         };
         return new Promise((resolve, reject) => {
-            this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
+            this.db.find({ "repository-name": ownerName }, (err: any, docs: any) => {
                 fse.move(newFile["file-path"], docs[0]["repository-path"] + `/${newFile["file-name"]}`, (err: any) => {
                     console.log(err);
-                    if (err === null) {
+                    if (err) {
+                        console.log(err)
+                        reject(err);
+                    }
+                    else {
+                        if (process.platform === 'win32')
+                            newFile["file-path"] = docs[0]["repository-path"] + `\\${newFile["file-name"]}`;
+                        else
+                            newFile["file-path"] = docs[0]["repository-path"] + `/${newFile["file-name"]}`;
                         this.db.insert(newFile);
                         resolve();
-                    }
-                    else{
-                        reject(err);
                     }
                 })
             });

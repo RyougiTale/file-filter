@@ -59,6 +59,7 @@ export class ListV extends React.Component<Props, State> {
             </CardContent>
             <CardActions style={{ display: 'flex', justifyContent: 'space-evenly' }}>
                 <Button size="small" color={"primary"} onClick={() => {
+                    console.log(filepath)
                     shell.showItemInFolder(filepath.toString());
                 }}>Open It</Button>
                 <Button size="small" color={"primary"} onClick={() => {

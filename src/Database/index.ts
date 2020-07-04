@@ -8,6 +8,18 @@ const move = require('../Common/move')
 // let MyDatabase = new Datastore({ filename: path.join(__dirname, "db.db"), autoload: true });
 
 
+interface file {
+    ownerName: String,
+    fileName: String,
+    filePath: String,
+    fileDescription: String,
+    fileTags: String[],
+}
+
+interface dataBaseInterface {
+
+}
+
 class Database {
     db: any;
     haveListen: boolean;
@@ -128,9 +140,67 @@ class Database {
             fse.move(something["file-path"], docs[0]["repository-path"] + `/${something["file-name"]}`, (err: any) => {
                 console.log(err);
             })
-
         });
     }
-}
 
+    insertFile(ownerName: String, fileName: String, filePath: String, fileDescription: String, fileTags: String[]) {
+        let newFile = {
+            "owner-name": ownerName,
+            "file-name": fileName,
+            "file-path": filePath,
+            "file-description": fileDescription,
+            "file-tags": fileTags,
+        };
+        this.db.insert(newFile);
+        this.db.find({ "repository-type": "main" }, (err: any, docs: any) => {
+            fse.move(newFile["file-path"], docs[0]["repository-path"] + `/${newFile["file-name"]}`, (err: any) => {
+                console.log(err);
+            })
+        });
+    }
+
+    findFile(toFind: any) {
+        return new Promise((resolve, reject) => {
+            this.db.find(toFind, (err: any, docs: any) => {
+                if (err !== null) reject(err);
+                else resolve(docs)
+            });
+        })
+    }
+
+    findFileByRepName(repositoryName: String) {
+        return new Promise((resolve, reject) => {
+            this.db.find({ "owner-name": repositoryName }, (err: any, docs: any) => {
+                if (err !== null) reject(err);
+                else resolve(docs)
+            });
+        })
+    }
+
+    findFileByTagsArray(tagsArr: String[], repName: String) {
+        let findArgs: any[] = [];
+        for (let tag of tagsArr) {
+            // filter
+            findArgs.push({ "file-tags": tag });
+        }
+        findArgs.push({ "owner-name": repName });
+
+
+        return new Promise((resolve, reject) => {
+            this.db.find({ $and: findArgs }, (err: any, docs: any) => {
+                if (err !== null) reject(err);
+                else resolve(docs)
+            });
+        })
+    }
+
+    findAllRepotory() {
+        return new Promise((resolve, reject) => {
+            this.db.find({ "data-type": "repository" }, (err: any, docs: any) => {
+                if (err !== null) reject(err);
+                else resolve(docs)
+            });
+        })
+    }
+}
 export { Database };

@@ -30,7 +30,7 @@ interface State {
     needFresh: boolean,
 }
 
-let db: any = new Database();
+let db = new Database();
 
 export default class App extends React.Component<Props, State> {
 
@@ -73,65 +73,65 @@ export default class App extends React.Component<Props, State> {
                 }
             },
         ]
-        db.db.find({ "data-type": "repository" }, (err: any, docs: any) => {
-            console.log(docs);
-            if (docs.length !== 0) {
-                for (let ele of docs) {
-                    sub.push({
-                        label: ele["repository-name"],
-                        click: () => {
-                            this.setState({ mainRepositoryName: ele["repository-name"], needUpdateTags: true, needUpdateFiles: true })
-                        }
-                    })
-                }
-            }
-            const template: Electron.MenuItemConstructorOptions[] = [{
-                label: 'Edit',
-                submenu: [
-                    { role: 'undo' },
-                    { role: 'redo' },
-                    { type: 'separator' },
-                    { role: 'cut' },
-                    { role: 'copy' },
-                    { role: 'paste' },
-                    { role: 'pasteandmatchstyle' },
-                    { role: 'delete' },
-                    { role: 'selectall' }
-                ]
-            },
-            {
-                label: 'View',
-                submenu: [
-                    { role: 'reload' },
-                    { role: 'forcereload' },
-                    { role: 'toggledevtools' },
-                    { type: 'separator' },
-                    { role: 'resetzoom' },
-                    { role: 'zoomin' },
-                    { role: 'zoomout' },
-                    { type: 'separator' },
-                    { role: 'togglefullscreen' }
-                ]
-            },
-            { role: 'window', submenu: [{ role: 'minimize' }, { role: 'close' }] },
-            {
-                role: 'help',
-                submenu: [{
-                    label: 'Learn More',
-                    click() {
-                        require('electron').shell.openExternal('https://electron.atom.io');
+        db.findAllRepotory().then(
+            (docs: any) => {
+                if (docs.length !== 0) {
+                    for (let ele of docs) {
+                        sub.push({
+                            label: ele["repository-name"],
+                            click: () => {
+                                this.setState({ mainRepositoryName: ele["repository-name"], needUpdateTags: true, needUpdateFiles: true })
+                            }
+                        })
                     }
-                }]
-            },
-            {
-                label: 'repository',
-                submenu: sub
-            },
-            ];
+                }
+                const template: Electron.MenuItemConstructorOptions[] = [{
+                    label: 'Edit',
+                    submenu: [
+                        { role: 'undo' },
+                        { role: 'redo' },
+                        { type: 'separator' },
+                        { role: 'cut' },
+                        { role: 'copy' },
+                        { role: 'paste' },
+                        { role: 'pasteandmatchstyle' },
+                        { role: 'delete' },
+                        { role: 'selectall' }
+                    ]
+                },
+                {
+                    label: 'View',
+                    submenu: [
+                        { role: 'reload' },
+                        { role: 'forcereload' },
+                        { role: 'toggledevtools' },
+                        { type: 'separator' },
+                        { role: 'resetzoom' },
+                        { role: 'zoomin' },
+                        { role: 'zoomout' },
+                        { type: 'separator' },
+                        { role: 'togglefullscreen' }
+                    ]
+                },
+                { role: 'window', submenu: [{ role: 'minimize' }, { role: 'close' }] },
+                {
+                    role: 'help',
+                    submenu: [{
+                        label: 'Learn More',
+                        click() {
+                            require('electron').shell.openExternal('https://electron.atom.io');
+                        }
+                    }]
+                },
+                {
+                    label: 'repository',
+                    submenu: sub
+                },
+                ];
 
-            const menu = Menu.buildFromTemplate(template)
-            Menu.setApplicationMenu(menu)
-        })
+                const menu = Menu.buildFromTemplate(template)
+                Menu.setApplicationMenu(menu)
+            })
 
     }
 
@@ -165,20 +165,8 @@ export default class App extends React.Component<Props, State> {
                                 fileNames = path.split("\\");
                             else
                                 fileNames = path.split("/");
-                            let file = {
-                                "owner-name": defaultRepository,
-                                "file-name": fileNames[fileNames.length - 1],
-                                "file-path": path,
-                                "file-description": des,
-                                "file-tags": tagArray,
-                            };
                             // db.db.findOne({ "data-type": "file-tags" }, (err: any, docs: any) => {
-                            //     console.log(docs);
-                            // })
-                            // for (let ele of tagArray) {
-                            //     db.update({"data-type": "file-tags"}, )
-                            // }
-                            db.insert(file);
+                            db.insertFile(defaultRepository, fileNames[fileNames.length - 1], path, des, tagArray);
                             this.setState({ needUpdateFiles: true, needUpdateTags: true })
                         })
                         .catch(() => {
@@ -206,8 +194,13 @@ export default class App extends React.Component<Props, State> {
         }
     }
 
+    getLoading() {
+        return (<div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CircularProgress color="secondary" />
+        </div>);
+    }
 
-    render() {
+    checkInit() {
         if (this.state.needInit === true) {
             return (
                 <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -219,32 +212,34 @@ export default class App extends React.Component<Props, State> {
                 </div>
             );
         }
+    }
+
+    checkMainRepository() {
         if (this.state.mainRepositoryName === "") {
             if (this.state.repositoryArray.length === 0 || this.state.needFresh === true) {
-                db.db.find({ "data-type": "repository" }, (err: any, docs: any) => {
-                    console.log(`[story] ${docs}`);
-                    console.log(docs);
-                    if (docs.length == 0) {
-                        this.setState({ needInit: true })
+                db.findAllRepotory().then(
+                    (arr: any) => {
+                        console.log(arr);
+                        if (arr.length == 0) {
+                            this.setState({ needInit: true })
+                        }
+                        else {
+                            this.setState({ repositoryArray: arr.map((obj: any) => { return obj["repository-name"] }) });
+                        }
+                        this.setState({ needFresh: false });
                     }
-                    else {
-                        this.setState({ repositoryArray: docs.map((obj: any) => { return obj["repository-name"] }) });
-                    }
-                    this.setState({ needFresh: false });
-                });
-                return (
-                    <div className="mainRepository" style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CircularProgress color="secondary" />
-                    </div>
-                );
+                )
+                return this.getLoading();
             }
             else {
                 return <Choose repositoryArray={this.state.repositoryArray} callBack={this.setMainRepositoryName.bind(this)} />
             }
         }
+    }
 
+    checkUpdateTags() {
         if (this.state.needUpdateTags === true) {
-            db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
+            db.findFileByRepName(this.state.mainRepositoryName).then((docs: any) => {
                 console.log(docs.map((obj: any) => { return obj["file-tags"] }))
                 // this.setState({buttonsArray, needUpdateTags: false})
                 let tagsArray: any[] = [];
@@ -259,17 +254,15 @@ export default class App extends React.Component<Props, State> {
                 console.log(keysSorted);
                 this.setState({ buttonsArray: keysSorted, needUpdateTags: false })
             })
-            return (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <CircularProgress color="secondary" />
-                </div>
-            );
+            return this.getLoading();
         }
+    }
 
+    checkUpdateFiles() {
         if (this.state.needUpdateFiles === true) {
             // MyDatabase.find({"tags":{$in: ["a","c"]}},(err,docs)=>{console.log(docs)})
             // MyDatabase.find({$and: [{"tags":"a"},{"tags":"c"}]},(err,docs)=>{console.log(docs)})
-            db.db.find({ "owner-name": this.state.mainRepositoryName }, (err: any, docs: any) => {
+            db.findFileByRepName(this.state.mainRepositoryName).then((docs: any) => {
                 let array: any[] = [];
                 console.log(this.state.selectedButtonArray)
                 if (this.state.selectedButtonArray.length === 0) {
@@ -280,29 +273,24 @@ export default class App extends React.Component<Props, State> {
                     this.setState({ needUpdateFiles: false, fileArray: array })
                     return;
                 }
-                let findArgs: any[] = [];
-                for (let tag of this.state.selectedButtonArray) {
-                    // filter
-                    findArgs.push({ "file-tags": tag });
-                }
                 console.log(docs.map((obj: any) => { return obj["file-tags"] }))
-                console.log(findArgs);
-                findArgs.push({ "owner-name": this.state.mainRepositoryName });
-                db.db.find({ $and: findArgs }, (err: any, docs: any) => {
+                db.findFileByTagsArray(this.state.selectedButtonArray, this.state.mainRepositoryName).then((docs: any) => {
                     for (let file of docs) {
                         array.push(file);
                     }
-                    console.log(array)
                     this.setState({ needUpdateFiles: false, fileArray: array })
                 })
             })
-            // return (
-            //     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            //         <CircularProgress color="secondary" />
-            //     </div>
-            // );
+            return this.getLoading();
         }
+    }
 
+    render() {
+        let curFlow: any;
+        if (curFlow = this.checkInit()) return curFlow;
+        if (curFlow = this.checkMainRepository()) return curFlow;
+        if (curFlow = this.checkUpdateTags()) return curFlow;
+        this.checkUpdateFiles();
         return (
             <div style={{
                 width: '100%',

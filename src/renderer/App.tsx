@@ -158,7 +158,7 @@ export default class App extends React.Component<Props, State> {
             else
                 fileNames = path.split("/");
             smalltalk
-                .prompt('Description', 'You should type description for this file', fileNames[fileNames.length - 1].slice(0, fileNames[fileNames.length - 1].lastIndexOf('.')))
+                .prompt('Description', 'You should type description for this file', fileNames[fileNames.length - 1].slice(0, fileNames[fileNames.length - 1].lastIndexOf('.'))) // get default filename as descripsion
                 .then((description: String) => {
                     des = description;
                     smalltalk

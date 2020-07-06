@@ -152,20 +152,19 @@ export default class App extends React.Component<Props, State> {
         if (this.state.mainRepositoryName !== "") {
             let defaultRepository: String = this.state.mainRepositoryName;
             let des: String = "";
+            let fileNames: String[] = [];
+            if (path.indexOf(":") !== -1)
+                fileNames = path.split("\\");
+            else
+                fileNames = path.split("/");
             smalltalk
-                .prompt('Description', 'You should type description for this file', "")
+                .prompt('Description', 'You should type description for this file', fileNames[fileNames.length - 1].slice(0, fileNames[fileNames.length - 1].lastIndexOf('.'))) // get default filename as descripsion
                 .then((description: String) => {
                     des = description;
-
                     smalltalk
                         .prompt('Tags', 'You should type tags with space \" \"', "example: c++ thread developing")
                         .then((tag: String) => {
                             let tagArray = tag.split(" ").filter(n => n);
-                            let fileNames: String[] = [];
-                            if (path.indexOf(":") !== -1)
-                                fileNames = path.split("\\");
-                            else
-                                fileNames = path.split("/");
                             // db.db.findOne({ "data-type": "file-tags" }, (err: any, docs: any) => {
                             db.insertFile(defaultRepository, fileNames[fileNames.length - 1], path, des, tagArray).then(
                                 () => { this.setState({ needUpdateFiles: true, needUpdateTags: true }) },

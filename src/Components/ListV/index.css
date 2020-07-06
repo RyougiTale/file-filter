@@ -1,0 +1,21 @@
+.MuiPaper-root{
+    background: rgba(255,255,255,.1) !important;
+    color: #e2e2e2 !important;
+    border-bottom: 2px rgb(255, 190, 50,.5) solid;
+    border-radius: 10px !important;
+}
+.MuiButton-textPrimary{
+    color: #e2e2e2 !important;
+}
+.MuiTypography-colorPrimary{
+    color: #e2e2e2 !important;
+}
+.MuiTypography-colorTextSecondary{
+    color: #d1d1d1c2 !important;
+    border-left: 5px rgb(255, 190, 50) solid;
+    padding-left: 15px;
+    font-size: 0.8rem !important;
+    margin-top: 10px !important;
+    line-height: 2.2 !important;
+    background: rgba(255,255,255,.05) !important;
+}

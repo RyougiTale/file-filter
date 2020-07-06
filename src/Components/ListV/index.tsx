@@ -3,7 +3,7 @@ import { Paper } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/';
 import { Card, CardActions, CardContent, Typography, Button } from '@material-ui/core/';
 const { shell } = require('electron')
-
+import './index.css'
 
 
 interface Props {

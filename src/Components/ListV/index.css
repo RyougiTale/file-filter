@@ -1,8 +1,35 @@
+@keyframes listVInit{
+    0%{
+        opacity: .5;
+        margin-top: 5px;
+    }
+    100%{
+        opacity: 1;
+        margin-top: 0;
+    }
+}
+@keyframes textSecondaryInit{
+    0%{
+        transform:rotateX(90deg);
+        border-left: 5px  solid;
+    }
+    100%{
+        transform:rotateX(0deg);
+        border-left: 5px rgb(255, 190, 50) solid;
+    }
+}
 .MuiPaper-root{
+    opacity: .5;
+    /* css3动画 */
+    animation: listVInit .35s linear;
+    margin-top: 5px;
+    /* 结束后保留样式 */
+    animation-fill-mode: forwards;
     background: rgba(255,255,255,.1) !important;
     color: #e2e2e2 !important;
     border-bottom: 2px rgb(255, 190, 50,.5) solid;
     border-radius: 10px !important;
+    overflow: hidden;
 }
 .MuiButton-textPrimary{
     color: #e2e2e2 !important;
@@ -11,11 +38,31 @@
     color: #e2e2e2 !important;
 }
 .MuiTypography-colorTextSecondary{
+    transform:rotateX(90deg);
+
+    animation: textSecondaryInit .35s linear;
+    margin-top: 5px;
+    border-left: 5px  solid;
+    /* 结束后保留样式 */
+    animation-fill-mode: forwards;
+    animation-delay:.35s;
+
     color: #d1d1d1c2 !important;
-    border-left: 5px rgb(255, 190, 50) solid;
     padding-left: 15px;
     font-size: 0.8rem !important;
     margin-top: 10px !important;
     line-height: 2.2 !important;
     background: rgba(255,255,255,.05) !important;
+}
+.MuiButton-textSizeSmall{
+    height: 100%;
+    width: 100%;
+    padding: 12px 13px !important;
+    cursor: pointer;
+}
+.MuiButton-textSizeSmall:hover{
+    background: rgba(255,255,255,.12) !important;
+}
+.MuiCardActions-root{
+    padding: 0 !important;
 }

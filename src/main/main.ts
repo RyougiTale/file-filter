@@ -13,7 +13,7 @@ const globalAny: any = global;
 let db: any;
 //dummy data
 import { dummyButtons, dummyFiles } from '../Common/dummydata';
-const use_dummy_data = true;
+const use_dummy_data = false;
 
 
 function createWindow(): void {
@@ -24,10 +24,11 @@ function createWindow(): void {
         webPreferences: {
             webSecurity: false,
             devTools: process.env.NODE_ENV === 'production' ? false : true,
+            nodeIntegration: true
         },
     });
     //open console
-    mainWindow.webContents.openDevTools({ mode: "detach" });
+    // mainWindow.webContents.openDevTools({ mode: "detach" });
     // load the index.html of the app.
 
     mainWindow.loadURL(
@@ -89,14 +90,12 @@ function createWindow(): void {
         })
     })
     //open file
-    ipcMain.on('open-file-dialog', (event: any) => {
-        dialog.showOpenDialog({
-            properties: ['openFile', 'openDirectory']
-        }, (files) => {
-            if (files) {
-                event.sender.send('selected-directory', files)
-            }
-        })
+    ipcMain.on('open-file-dialog', async (event: any) => {
+        const ret: Electron.OpenDialogReturnValue = await dialog.showOpenDialog({ properties: ['openFile', 'openDirectory'] });
+        if (ret.canceled === false) {
+            // console.log(ret)
+            event.sender.send('selected-directory', ret.filePaths)
+        }
     })
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {

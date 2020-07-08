@@ -1,6 +1,6 @@
 {
   "name": "file-sorter",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "help sort files",
   "main": "./dist/main.bundle.js",
   "scripts": {
@@ -12,7 +12,7 @@
     "build:mac": "electron-builder build --mac --x64"
   },
   "build": {
-    "appId": "003",
+    "appId": "005",
     "productName": "file sorter",
     "directories": {
       "app": "./dist/",

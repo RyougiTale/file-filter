@@ -162,7 +162,7 @@ export default class App extends React.Component<Props, State> {
                 .then((description: String) => {
                     des = description;
                     smalltalk
-                        .prompt('Tags', 'You should type tags with space \" \"', "example: c++ thread developing")
+                        .prompt('Tags', 'You should type tags with space \" \" ', "example: c++ thread developing")
                         .then((tag: String) => {
                             let tagArray = tag.split(" ").filter(n => n);
                             // db.db.findOne({ "data-type": "file-tags" }, (err: any, docs: any) => {

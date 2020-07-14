@@ -31,9 +31,13 @@ bug
 - [ ] 增加检索功能
 
 ## Download Link
+
 You can download in release as well
-[Download](https://pan.baidu.com/s/1evHDJCWOslPMakrkDqH0qg)
+
+[Click here to download](https://pan.baidu.com/s/1evHDJCWOslPMakrkDqH0qg)
+
 link：https://pan.baidu.com/s/1evHDJCWOslPMakrkDqH0qg 
+
 passwd：mni0
 
 ## Usage

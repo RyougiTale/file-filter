@@ -46,7 +46,7 @@
     "@types/react-router": "^4.4.5",
     "@types/react-router-dom": "^4.3.5",
     "acorn": "^6.4.1",
-    "ajv": "^6.10.2",
+    "ajv": "^6.12.3",
     "copy-pkg-json-webpack-plugin": "0.0.38",
     "cross-env": "^5.2.1",
     "css-loader": "^1.0.1",
